@@ -1,0 +1,150 @@
+diff -Nurp ganglia-3.3.8/autogen.sh ganglia-3.3.8.new/autogen.sh
+--- ganglia-3.3.8/autogen.sh	1970-01-01 08:00:00.000000000 +0800
++++ ganglia-3.3.8.new/autogen.sh	2014-10-24 11:35:38.000000000 +0800
+@@ -0,0 +1,26 @@
++#!/bin/bash - 
++#===============================================================================
++#
++#          FILE:  autogen.sh
++# 
++#         USAGE:  ./autogen.sh 
++# 
++#   DESCRIPTION:  
++# 
++#       OPTIONS:  ---
++#  REQUIREMENTS:  ---
++#          BUGS:  ---
++#         NOTES:  ---
++#        AUTHOR: gdzhang (), gdzhang@linx-info.com
++#       COMPANY: linx-info
++#       CREATED: 2013年07月18日 15时35分04秒 CST
++#      REVISION:  ---
++#===============================================================================
++
++set -o nounset                              # Treat unset variables as an error
++
++aclocal
++autoheader
++libtoolize -c -f 
++automake --foreign --add-missing --copy
++autoconf
+diff -Nurp ganglia-3.3.8/gmetad/gmetad.c ganglia-3.3.8.new/gmetad/gmetad.c
+--- ganglia-3.3.8/gmetad/gmetad.c	2012-08-13 20:55:09.000000000 +0800
++++ ganglia-3.3.8.new/gmetad/gmetad.c	2014-10-24 11:35:38.000000000 +0800
+@@ -11,12 +11,15 @@
+ #include <cmdline.h>
+ 
+ #include <apr_time.h>
++#include <liblinxsn.h>
+ 
+ #include "daemon_init.h"
+ #include "update_pidfile.h"
+ 
+ #include "rrd_helpers.h"
+ 
++#define LINX_GMETAD_SN_CKPATH "/etc/linxsn/gmetad_sn.conf"
++
+ #define METADATA_SLEEP_RANDOMIZE 5.0
+ #define METADATA_MINIMUM_SLEEP 1
+ 
+@@ -284,6 +287,17 @@ main ( int argc, char *argv[] )
+          err_quit("%s doesn't have any data sources specified", args_info.conf_arg);
+       }
+ 
++   /* linx serial number check */
++   sn_info tsn_info;
++ 
++   memset(&tsn_info, 0, sizeof(tsn_info));
++   memcpy(tsn_info.product, "LXMT", sizeof("LXMT"));
++ 
++   if( 0 != check_linxsn(&tsn_info,LINX_GMETAD_SN_CKPATH,1)){
++	   printf("gmetad linxsn check error!\n");
++  	exit(-1);
++  }
++
+    memset(&root, 0, sizeof(root));
+    root.id = ROOT_NODE;
+ 
+diff -Nurp ganglia-3.3.8/gmetad/gmetad_sn.conf ganglia-3.3.8.new/gmetad/gmetad_sn.conf
+--- ganglia-3.3.8/gmetad/gmetad_sn.conf	1970-01-01 08:00:00.000000000 +0800
++++ ganglia-3.3.8.new/gmetad/gmetad_sn.conf	2014-10-24 09:57:45.000000000 +0800
+@@ -0,0 +1 @@
++linx_serial=
+diff -Nurp ganglia-3.3.8/gmetad/Makefile.am ganglia-3.3.8.new/gmetad/Makefile.am
+--- ganglia-3.3.8/gmetad/Makefile.am	2012-08-13 20:55:09.000000000 +0800
++++ ganglia-3.3.8.new/gmetad/Makefile.am	2014-10-24 11:35:38.000000000 +0800
+@@ -22,10 +22,10 @@ cmdline.c: cmdline.c.in $(FIXCONFIG)
+ gmetad_SOURCES =  gmetad.c cmdline.c.in cmdline.c cmdline.h gmetad.h data_thread.c \
+    server.c process_xml.c rrd_helpers.c conf.c conf.h type_hash.c \
+    xml_hash.c cleanup.c rrd_helpers.h daemon_init.c daemon_init.h
+-gmetad_LDADD   = $(top_builddir)/lib/libganglia.la -lrrd -lm \
++gmetad_LDADD   = $(top_builddir)/lib/libganglia.la -lrrd -lm -lrt /usr/lib64/liblinxsn.a \
+                  $(GLDADD)
+ 
+-gmetad_LDFLAGS = $(GLDFLAGS)
++gmetad_LDFLAGS = $(GLDFLAGS) -lssl
+ 
+ EXTRA_DIST = gmetad.aix.init gmetad.conf.in gmetad.init gmetad.init.SuSE \
+     type_hash.gperf xml_hash.gperf gmetad-default cmdline.sh
+diff -Nurp ganglia-3.3.8/gmond/gmond.c ganglia-3.3.8.new/gmond/gmond.c
+--- ganglia-3.3.8/gmond/gmond.c	2012-08-13 20:55:09.000000000 +0800
++++ ganglia-3.3.8.new/gmond/gmond.c	2014-10-24 11:35:38.000000000 +0800
+@@ -35,6 +35,7 @@
+ #include <apr_tables.h>
+ #include <apr_dso.h>
+ #include <apr_version.h>
++#include <liblinxsn.h>
+ 
+ #ifdef HAVE_LIBPCRE
+ #if defined (HAVE_PCRE_PCRE_H)
+@@ -53,6 +54,8 @@
+ #include "gm_scoreboard.h"
+ #include "ganglia_priv.h"
+ 
++#define LINX_GMOND_SN_CKPATH "/etc/linxsn/gmond_sn.conf"
++
+ /* Specifies a single value metric callback */
+ #define CB_NOINDEX -1
+ 
+@@ -2926,6 +2929,17 @@ main ( int argc, char *argv[] )
+     {
+       exit (print_ganglia_25_config( args_info.convert_arg ));
+     }
++	
++	/* linx serial number check */
++	sn_info tsn_info;
++	
++	memset(&tsn_info, 0, sizeof(tsn_info));
++	memcpy(tsn_info.product, "LXMT", sizeof("LXMT"));
++	
++	if( 0 != check_linxsn(&tsn_info,LINX_GMOND_SN_CKPATH,1)){
++	printf("gmond linxsn check error!\n");
++	exit(-1);
++	}
+ 
+   /* Create the global context */
+   global_context = (apr_pool_t*)Ganglia_pool_create(NULL);
+diff -Nurp ganglia-3.3.8/gmond/gmond_sn.conf ganglia-3.3.8.new/gmond/gmond_sn.conf
+--- ganglia-3.3.8/gmond/gmond_sn.conf	1970-01-01 08:00:00.000000000 +0800
++++ ganglia-3.3.8.new/gmond/gmond_sn.conf	2014-10-24 09:57:30.000000000 +0800
+@@ -0,0 +1 @@
++linx_serial=
+diff -Nurp ganglia-3.3.8/gmond/Makefile.am ganglia-3.3.8.new/gmond/Makefile.am
+--- ganglia-3.3.8/gmond/Makefile.am	2012-08-13 20:55:09.000000000 +0800
++++ ganglia-3.3.8.new/gmond/Makefile.am	2014-10-24 11:35:38.000000000 +0800
+@@ -53,13 +53,13 @@ gmond.conf.html: conf.pod
+ #monitor.c server.c listen.c cleanup.c \
+ #metric.h dtd.h 
+ gmond_LDADD = $(top_builddir)/libmetrics/libmetrics.la \
+-              $(top_builddir)/lib/libganglia.la \
++              $(top_builddir)/lib/libganglia.la -lrt /usr/lib64/liblinxsn.a \
+               $(top_builddir)/lib/libgetopthelper.a \
+               $(GLDADD)
+ 
+ gmond_DEPENDENCIES = $(gmond_LDADD)
+ 
+-gmond_LDFLAGS = $(GLDFLAGS)
++gmond_LDFLAGS = $(GLDFLAGS) -lssl
+ 
+ gmond.solaris.init:	gmond.solaris.init.in $(FIXCONFIG)
+ 	$(FIXCONFIG) gmond.solaris.init.in

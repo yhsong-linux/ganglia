@@ -1,0 +1,2307 @@
+diff -Nurp ganglia-3.3.8/web/actions.php /usr/share/ganglia-webfrontend/actions.php
+--- ganglia-3.3.8/web/actions.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/actions.php	2014-10-22 09:32:01.000000000 +0800
+@@ -14,13 +14,13 @@ if ( isset($_GET['action']) && $_GET['ac
+   <?php
+   if ( isset($_GET['aggregate']) ) {
+   ?>
+-     <tr><th>Host regular expression</th><td><?php print join (",", $_GET['hreg']); ?></td></tr>
+-     <tr><th>Metric regular expression</th><td><?php print join (",", $_GET['mreg']); ?></td></tr>
++     <tr><th>主机正则表达式</th><td><?php print join (",", $_GET['hreg']); ?></td></tr>
++     <tr><th>指标正则表达式</th><td><?php print join (",", $_GET['mreg']); ?></td></tr>
+   <?php
+     } else {
+   ?>
+-     <tr><th>Hostname</th><td><?php print $_GET['host_name']; ?></td></tr>
+-     <tr><th>Metric/Report</th><td><?php print $_GET['metric_name']; ?></td></tr>
++     <tr><th>主机名称</th><td><?php print $_GET['host_name']; ?></td></tr>
++     <tr><th>指标/报告</th><td><?php print $_GET['metric_name']; ?></td></tr>
+   <?php
+   }
+   ?>
+@@ -28,7 +28,7 @@ if ( isset($_GET['action']) && $_GET['ac
+   </table>
+   <p>
+   <form id="add_metric_to_view_form">
+-    Add to view
++    添加至视图
+     <?php 
+     // Get all the aggregate form variables and put them in the hidden fields
+     if ( isset($_GET['aggregate']) ) {
+@@ -55,7 +55,7 @@ if ( isset($_GET['action']) && $_GET['ac
+     ?>
+ 
+     <select onChange="addItemToView()" name="view_name">
+-    <option value='none'>Please choose one</option>
++    <option value='none'>请选择一个</option>
+     <?php
+     foreach ( $available_views as $view_id => $view ) {
+       print "<option value='" . $view['view_name'] . "'>" . $view['view_name'] . "</option>";
+@@ -66,19 +66,19 @@ if ( isset($_GET['action']) && $_GET['ac
+   </form>
+   <form>
+     <p>
+-    Add alert: <p>
+-    Alert when value is 
++    添加警报: <p>
++    发出警报,当值 
+     <select name=alert_operator>
+-      <option value=more>greater</option>
+-      <option value=less>smaller</option>
+-      <option value=equal>equal</option>
+-      <option value=notequal>not equal</option>
+-    </select> than
++      <option value=more>大</option>
++      <option value=less>小</option>
++      <option value=equal>等</option>
++      <option value=notequal>不等</option>
++    </select> 于
+     <input size=7 name=critical_value type=text>
+-    <button onClick="alert('not implemented yet'); return false">Add</button>
++    <button onClick="alert('尚未实现'); return false">添加</button>
+   </form>
+ 
+ <?php
+ 
+ } // end of if ( isset($_GET['show_views']) {
+-?>
+\ No newline at end of file
++?>
+diff -Nurp ganglia-3.3.8/web/aggregate_graphs.php /usr/share/ganglia-webfrontend/aggregate_graphs.php
+--- ganglia-3.3.8/web/aggregate_graphs.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/aggregate_graphs.php	2014-10-22 09:33:11.000000000 +0800
+@@ -21,12 +21,12 @@
+ 
+   function createAggregateGraph() {
+     if ($('#hreg').val() == "" || $('#metric_chooser').val() == "") {
+-      alert("Host regular expression and metric name can't be blank");
++      alert("主机正则表达式和指标名称不能为空");
+       return false;
+     }
+ 
+     var params = $("#aggregate_graph_form").serialize() + "&aggregate=1";
+-    $("#show_direct_link").html("<a href='graph_all_periods.php?" + params + "'>Direct Link to this aggregate graph</a>");
++    $("#show_direct_link").html("<a href='graph_all_periods.php?" + params + "'>直接链接到本汇总图表</a>");
+     $("#aggregate_graph_display").html('<img src="img/spinner.gif">');
+     $.ajax({url: 'graph_all_periods.php', 
+ 	    cache: false,
+@@ -120,44 +120,44 @@ $(function() {
+ });
+ </script>
+ <div id="aggregate_graph_header">
+-<h2>Create aggregate graphs</h2>
++<h2>创建汇总图表</h2>
+ <form id="aggregate_graph_form">
+ <table id="aggregate_graph_table_form">
+ <tr>
+-<td>Title:</td>
++<td>标题:</td>
+ <td colspan=2><input name="title" id="title" value="" size=60></td>
+ </tr>
+ <tr>
+-<td>Vertical (Y-Axis) label:</td>
++<td>纵坐标(Y轴)标签:</td>
+ <td colspan=2><input name="vl" id="vl" value="" size=60></td>
+ </tr>
+ <tr>
+-<td>Limits</td><td>Upper:<input name="x" id="x" value="" size=10></td><td>Lower:<input name="n" id="n" value="" size=10></td>
++<td>范围设定</td><td>最大:<input name="x" id="x" value="" size=10></td><td>最小:<input name="n" id="n" value="" size=10></td>
+ </tr>
+ <tr>
+-<td>Host Regular expression e.g. web-[0,4], web or (web|db):</td>
++<td>主机正则表达式 比如web-[0,4], web 或 (web|db):</td>
+ <td colspan=2><input name="hreg[]" id="hreg" size=60></td>
+ </tr>
+-<tr><td>Metric Regular expression (not a report e.g. load_one, bytes_(in|out)):</td>
++<tr><td>指标正则表达式(比如load_one, bytes_(in|out)):</td>
+ <td colspan=2><input name="mreg[]" id="metric_chooser" size=60></td>
+ </tr>
+ <tr>
+-<td>Graph Type:</td><td>
+-<div id="graph_type_menu"><input type="radio" name="gtype" id="gtline" value="line" checked /><label for="gtline">Line</label>
+-<input type="radio" name="gtype" id="gtstack" value="stack" /><label for="gtstack">Stacked</label></div>
++<td>图表类型:</td><td>
++<div id="graph_type_menu"><input type="radio" name="gtype" id="gtline" value="line" checked /><label for="gtline">曲线图</label>
++<input type="radio" name="gtype" id="gtstack" value="stack" /><label for="gtstack">堆积图</label></div>
+ </td>
+ </tr>
+ <tr>
+-<td>Legend options:</td><td>
+-<div id="graph_legend_menu"><input type="radio" name="glegend" id="glshow" value="show" checked /><label for="glshow">Show legend</label>
+-<input type="radio" name="glegend" id="glhide" value="hide" /><label for="glhide">Hide legend</label></div>
++<td>指标选择项:</td><td>
++<div id="graph_legend_menu"><input type="radio" name="glegend" id="glshow" value="show" checked /><label for="glshow">显示指标值</label>
++<input type="radio" name="glegend" id="glhide" value="hide" /><label for="glhide">隐藏指标值</label></div>
+ </td>
+ </tr>
+ <tr>
+ <td>
+ </td>
+ <td>
+-<button class="ag_buttons" onclick="createAggregateGraph(); return false">Create Graph</button></td>
++<button class="ag_buttons" onclick="createAggregateGraph(); return false">点击创建图表</button></td>
+ </tr>
+ </table>
+ </form>
+diff -Nurp ganglia-3.3.8/web/api/views.php /usr/share/ganglia-webfrontend/api/views.php
+--- ganglia-3.3.8/web/api/views.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/api/views.php	2014-10-22 09:29:27.000000000 +0800
+@@ -9,13 +9,13 @@ include_once $conf['gweb_root'] . "/func
+ include_once $conf['gweb_root'] . "/lib/common_api.php";
+ 
+ if ( !isset($_GET['action']) ) {
+-  api_return_error( "Error: You need to specify an action at a minimum" );
++  api_return_error( "错误: 您需要至少指定一个操作" );
+ }
+ 
+ $events_array = ganglia_events_get();
+ 
+ if( ! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::VIEW, $conf) ) {
+-  api_return_error("You do not have access to view views.");
++  api_return_error("您没有权限查看视图.");
+ }
+ 
+ switch ( $_GET['action'] ) {
+@@ -29,7 +29,7 @@ switch ( $_GET['action'] ) {
+       }
+     }
+     if (!$found_view) {
+-      api_return_error("That view does not exist.");
++      api_return_error("这个视图不存在.");
+     }
+     $view_suffix = str_replace(" ", "_", $_GET['view_name']);
+     $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
+@@ -48,7 +48,7 @@ switch ( $_GET['action'] ) {
+ 
+   case 'create_view': 
+   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
+-    api_return_error("You do not have access to edit views.");
++    api_return_error("您没有权限编辑视图.");
+   } else {
+     // Check whether the view name already exists
+     $view_exists = 0;
+@@ -62,7 +62,7 @@ switch ( $_GET['action'] ) {
+     }
+ 
+     if ( $view_exists == 1 ) {
+-      api_return_error("View with the name ".$_GET['view_name']." already exists.");
++      api_return_error("视图 ".$_GET['view_name']." 已存在.");
+     } else {
+       $empty_view = array ( "view_name" => $_GET['view_name'],
+         "items" => array() );
+@@ -70,9 +70,9 @@ switch ( $_GET['action'] ) {
+       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
+       $json = json_encode($empty_view);
+       if ( file_put_contents($view_filename, json_prettyprint($json)) === FALSE ) {
+-        api_return_error("Can't write to file $view_filename. Perhaps permissions are wrong.");
++        api_return_error("不能写入文件 $view_filename. 也许权限是错误的.");
+       } else {
+-        api_return_ok("View has been created successfully.");
++        api_return_ok("视图已成功创建.");
+       } // end of if ( file_put_contents($view_filename, $json) === FALSE ) 
+     }  // end of if ( $view_exists == 1 )
+   }
+@@ -83,7 +83,7 @@ switch ( $_GET['action'] ) {
+ //////////////////////////////////////////////////////////////////////////////////////////////////////
+   case 'delete_view':
+   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
+-    api_return_error("You do not have access to edit views.");
++    api_return_error("您没有权限编辑视图.");
+   } else {
+     // Check whether the view name already exists
+     $view_exists = 0;
+@@ -97,14 +97,14 @@ switch ( $_GET['action'] ) {
+     }
+ 
+     if ( $view_exists != 1 ) {
+-      api_return_error("View with the name ".$_GET['view_name']." does not exist.");
++      api_return_error("视图 ".$_GET['view_name']." 不存在.");
+     } else {
+       $view_suffix = str_replace(" ", "_", $_GET['view_name']);
+       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
+       if ( unlink($view_filename) === FALSE ) {
+-        api_return_error("Can't remove file $view_filename. Perhaps permissions are wrong.");
++        api_return_error("不能删除文件 $view_filename. 也许权限是错误的.");
+       } else {
+-        api_return_ok("View has been successfully removed.");
++        api_return_ok("视图已成功删除.");
+       }
+     }
+   }
+@@ -115,7 +115,7 @@ switch ( $_GET['action'] ) {
+ //////////////////////////////////////////////////////////////////////////////////////////////////////
+   case 'add_to_view':
+   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
+-    api_return_error("You do not have access to edit views.");
++    api_return_error("您没有权限编辑视图.");
+   } else {
+     $view_exists = 0;
+     // Check whether the view name already exists
+@@ -129,7 +129,7 @@ switch ( $_GET['action'] ) {
+     }
+ 
+     if ( $view_exists == 0 ) {
+-      api_return_error("View ".$_GET['view_name']." does not exist. This should not happen.");
++      api_return_error("视图 ".$_GET['view_name']." 不存在. 这是不应该发生的.");
+     } else {
+ 
+       // Read in contents of an existing view
+@@ -176,9 +176,9 @@ switch ( $_GET['action'] ) {
+       $json = json_encode($view);
+ 
+       if ( file_put_contents($view_filename, json_prettyprint($json)) === FALSE ) {
+-        api_return_error("Can't write to file $view_filename. Perhaps permissions are wrong.");
++        api_return_error("不能写入文件 $view_filename. 也许权限是错误的.");
+       } else {
+-        api_return_ok("View has been updated successfully.");
++        api_return_ok("视图已成功更新.");
+       } // end of if ( file_put_contents($view_filename, $json) === FALSE ) 
+     }  // end of if ( $view_exists == 1 )
+   }
+diff -Nurp ganglia-3.3.8/web/autorotation.php /usr/share/ganglia-webfrontend/autorotation.php
+--- ganglia-3.3.8/web/autorotation.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/autorotation.php	2014-10-23 01:43:01.000000000 +0800
+@@ -10,7 +10,7 @@ if ( ! isset($_GET['view_name']) ) {
+ 
+   $available_views = get_available_views();
+ 
+-  print "<form action=autorotation.php><select onchange='this.form.submit();' name=view_name><option value=none>Please choose...</option>";
++	print "<form action=autorotation.php><select onchange='this.form.submit();' name=view_name><option value=none>请选择...</option>";
+   foreach ( $available_views as $id => $view ) {
+     print "<option value='" . $view['view_name'] . "'>" . $view['view_name'] . "</option>";
+   }
+@@ -38,7 +38,7 @@ if ( ! isset($_GET['view_name']) ) {
+   unset($available_views);
+ 
+   if ( sizeof($view['items']) == 0 ) {
+-      die ("<font color=red size=4>There are no graphs in view '" . $_GET['view_name'] . "'. Please go back and add some.</font>");
++      die ("<font color=red size=4>在视图中没有图表 '" . $_GET['view_name'] . "'. 请返回并添加.</font>");
+   }
+ 
+   # If timeout is specified use it. Otherwise default to 30 seconds.
+@@ -124,7 +124,7 @@ if ( ! isset($_GET['view_name']) ) {
+     <center><form>
+     <input type="hidden" name="view_name" value="<?php print $_GET['view_name'] ?>">
+     <input type="hidden" name="id" value="<?php print $nextid ?>">
+-    Rotate graphs every <select onChange="form.submit();" name="timeout">
++    每 <select onChange="form.submit();" name="timeout">
+     <?php
+       for ( $i = 10 ; $i <= 90 ; $i += 5 ) {
+ 	if ( $timeout == $i )
+@@ -134,9 +134,9 @@ if ( ! isset($_GET['view_name']) ) {
+ 	print "<option value='" . $i . "' $selected>$i</option>";
+       }
+     ?>
+-    </select> seconds.</form></center>
++    </select> 秒循环一次视图.</form></center>
+     </p>
+-    <center><a href="/ganglia/">Go back to Ganglia</a></center></div>
++    <center><a href="/ganglia/">返回</a></center></div>
+ 	  </td>
+   </tr>
+   </table>
+diff -Nurp ganglia-3.3.8/web/cluster_legend.html /usr/share/ganglia-webfrontend/cluster_legend.html
+--- ganglia-3.3.8/web/cluster_legend.html	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/cluster_legend.html	2014-10-22 05:20:35.000000000 +0800
+@@ -8,33 +8,33 @@
+ <BODY BGCOLOR="#FFFFFF">
+ 
+ <TABLE CELLSPACING=3 CELLPADDING=6 BORDER=1>
+-<TR><TD COLSPAN=2 CLASS=title>Ganglia Cluster Image Legend</TD></TR>
++<TR><TD COLSPAN=2 CLASS=title>凝思系统监控软件集群图像说明</TD></TR>
+ <TR>
+-        <TD><B>Cluster Image</B></TD><TD><B>Meaning</B></TD>
++        <TD><B>集群图像</B></TD><TD><B>含义</B></TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#FF0000>Red</FONT></TD>
+-        <TD>Over 100% Utilization. Utilization is: (1 min load) / (number of CPUs in cluster) * 100%.</TD>
++        <TD><FONT COLOR=#FF0000>红色</FONT></TD>
++        <TD>利用率超过100%. 利用率: (1分钟负载) / (集群内的处理器数量) * 100%.</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#FF9900>Orange</FONT></TD><TD>75-100%</TD>
++        <TD><FONT COLOR=#FF9900>橙色</FONT></TD><TD>75-100%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#CCCC00>Yellow</FONT></TD><TD>50-74%</TD>
++        <TD><FONT COLOR=#CCCC00>黄色</FONT></TD><TD>50-74%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#009900>Green</FONT></TD><TD>25-49%</TD>
++        <TD><FONT COLOR=#009900>绿色</FONT></TD><TD>25-49%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#0000FF>Blue</FONT></TD><TD>0-24%</TD>
++        <TD><FONT COLOR=#0000FF>蓝色</FONT></TD><TD>0-24%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#COCOCO>Grey</FONT></TD><TD>A private cluster.</TD>
++        <TD><FONT COLOR=#COCOCO>灰色</FONT></TD><TD>私有集群.</TD>
+ </TR>
+ </TABLE>
+ 
+ <P>
+-<A HREF="./index.php" ALT="Back to Ganglia">Back</A>
++<A HREF="./index.php" ALT="Back to Ganglia">返回</A>
+ </P>
+ </BODY>
+ </HTML>
+diff -Nurp ganglia-3.3.8/web/cluster_view.php /usr/share/ganglia-webfrontend/cluster_view.php
+--- ganglia-3.3.8/web/cluster_view.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/cluster_view.php	2014-10-21 08:43:44.000000000 +0800
+@@ -150,11 +150,11 @@ function get_host_metric_graphs($showhos
+   case "descending":
+     arsort($sorted_hosts);
+     break;
+-  case "by name":
++	case "by name":
+     uksort($sorted_hosts, "strnatcmp");
+     break;
+   default:
+-  case "ascending":
++  case "asecending":
+     asort($sorted_hosts);
+     break;
+   }
+@@ -536,9 +536,9 @@ if (! $refresh) {
+   $data->assign("sort", $sort);
+   $data->assign("range", $range);
+   
+-  $showhosts_levels = array(1 => array('checked'=>'', 'name'=>'Auto'),
+-			    2 => array('checked'=>'', 'name'=>'Same'),
+-			    0 => array('checked'=>'', 'name'=>'None'),
++  $showhosts_levels = array(1 => array('checked'=>'', 'name'=>'自动'),
++			    2 => array('checked'=>'', 'name'=>'相同'),
++			    0 => array('checked'=>'', 'name'=>'没有'),
+ 			    );
+   $showhosts_levels[$showhosts]['checked'] = 'checked';
+   $data->assign("showhosts_levels", $showhosts_levels);
+diff -Nurp ganglia-3.3.8/web/conf_default.php /usr/share/ganglia-webfrontend/conf_default.php
+--- ganglia-3.3.8/web/conf_default.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/conf_default.php	2014-10-23 02:41:46.000000000 +0800
+@@ -220,14 +220,14 @@ $conf['nagios_cache_time'] = 45;
+ # Graph sizes
+ #
+ $conf['graph_sizes'] = array(
+-   'small'=>array(
++   '小图'=>array(
+      'height'=>65,
+      'width'=>200,
+      'fudge_0'=>0,
+      'fudge_1'=>0,
+      'fudge_2'=>0
+    ),
+-   'medium'=>array(
++   '中图'=>array(
+      'height'=>95,
+      'width'=>300,
+      'fudge_0'=>0,
+@@ -235,7 +235,7 @@ $conf['graph_sizes'] = array(
+      'fudge_2'=>28
+    ),
+ 
+-  'large'=>array(
++  '大图'=>array(
+      'height'=>150,
+      'width'=>480,
+      'fudge_0'=>0,
+@@ -243,7 +243,7 @@ $conf['graph_sizes'] = array(
+      'fudge_2'=>0
+    ),
+ 
+-   'xlarge'=>array(
++   '超大图'=>array(
+      'height'=>300,
+      'width'=>650,
+      'fudge_0'=>0,
+@@ -251,7 +251,7 @@ $conf['graph_sizes'] = array(
+      'fudge_2'=>0
+    ),
+ 
+-   'xxlarge'=>array(
++   '最大图'=>array(
+      'height'=>700,
+      'width'=>1150,
+      'fudge_0'=>0,
+@@ -259,7 +259,7 @@ $conf['graph_sizes'] = array(
+      'fudge_2'=>0
+    ),
+ 
+-   'mobile'=>array(
++   '便携终端'=>array(
+      'height'=>95,
+      'width'=>220,
+      'fudge_0'=>0,
+diff -Nurp ganglia-3.3.8/web/dwoo/Dwoo/Core.php /usr/share/ganglia-webfrontend/dwoo/Dwoo/Core.php
+--- ganglia-3.3.8/web/dwoo/Dwoo/Core.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/dwoo/Dwoo/Core.php	2014-10-21 03:51:40.000000000 +0800
+@@ -436,7 +436,7 @@ class Dwoo_Core
+         $this->globals = array
+         (
+             'version'   =>  self::VERSION,
+-            'ad'        =>  '<a href="http://dwoo.org/">Powered by Dwoo</a>',
++            'ad'        =>  '<a href="http://dwoo.org/">搭载Dwoo</a>',
+             'now'       =>  $_SERVER['REQUEST_TIME'],
+             'charset'   =>  $this->charset,
+         );
+diff -Nurp ganglia-3.3.8/web/events.php /usr/share/ganglia-webfrontend/events.php
+--- ganglia-3.3.8/web/events.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/events.php	2014-10-23 00:49:15.000000000 +0800
+@@ -45,23 +45,23 @@ function eventActions(action) {
+   });
+ }
+ </script>
+-<div align=center><button onClick='$("#add-event-dialog").dialog("open");' class="minimal-indent">Add an Event</button></div>
+-<div id=add-event-dialog title="Add Event">
+-You can specify either start date or end date or both.<p>
++<div align=center><button onClick='$("#add-event-dialog").dialog("open");' class="minimal-indent">添加一个事件</button></div>
++<div id=add-event-dialog title="添加事件">
++您可以指定开始日期和结束日期或两者兼而有之.<p>
+ <table width=90%>
+ <form id="event-actions-form">
+-<tr><td>Event Summary:</td><td><input type="text" name="summary" id="event_summary" size=20></td></tr>
+-<tr><td>Host Regex:</td><td><input type="text" name="host_regex" id="host_regex" size=20></td></tr>
+-<tr><td>Start Date:</td><td><input type="text" title="Start Date" name="start_date" id="event-start-date" size=20></td></tr>
+-<tr><td>End Date:</td><td><input type="text" title="End Date" name="end_date" id="event-end-date" size=20></td></tr>
++<tr><td>事件概述:</td><td><input type="text" name="summary" id="event_summary" size=20></td></tr>
++<tr><td>主机正则表达式:</td><td><input type="text" name="host_regex" id="host_regex" size=20></td></tr>
++<tr><td>开始日期:</td><td><input type="text" title="Start Date" name="start_date" id="event-start-date" size=20></td></tr>
++<tr><td>结束日期:</td><td><input type="text" title="End Date" name="end_date" id="event-end-date" size=20></td></tr>
+ <tr><td>
+-<button onclick="eventActions('add');" id="add-event-button">Add</button>
++<button onclick="eventActions('add');" id="add-event-button">添加</button>
+ </td><td colspan=2><div id="event-message"></div></td></tr>
+ </form>
+ </table>
+ </div>
+ <p>
+-Following is a list of known overlay events<p>
++下面是一组已知覆盖事件列表<p>
+ 
+ 
+ <?php 
+@@ -69,13 +69,13 @@ Following is a list of known overlay eve
+ ?>
+ <table id="overlay_event_table" width=90%>
+ <tr>
+-<th>Start Time</th>
+-<th>End Time</th>
+-<th>Summary</th>
+-<th>Description</th>
+-<th>Grid</th>
+-<th>Cluster</th>
+-<th>Host Regex</th>
++<th>开始时间</th>
++<th>结束时间</th>
++<th>概述</th>
++<th>描述</th>
++<th>网格</th>
++<th>集群</th>
++<th>主机正则表达式</th>
+ </tr>
+ <?php
+ 
+diff -Nurp ganglia-3.3.8/web/functions.php /usr/share/ganglia-webfrontend/functions.php
+--- ganglia-3.3.8/web/functions.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/functions.php	2014-10-22 06:01:19.000000000 +0800
+@@ -6,7 +6,6 @@
+ # and the global variables $metrics, $clusters, and $hosts
+ # have been set.
+ #
+-
+ include_once ( dirname(__FILE__) . "/lib/json.php" );
+ 
+ #
+@@ -1180,9 +1179,9 @@ function getHostOverViewData($hostname, 
+   $data->assign("node_image", node_image($metrics));
+ 
+   if ($hosts_up)
+-    $data->assign("node_msg", "This host is up and running."); 
++    $data->assign("node_msg", "这台主机已启动并正在运行."); 
+   else
+-    $data->assign("node_msg", "This host is down."); 
++    $data->assign("node_msg", "这台主机已关闭."); 
+ 
+   # No reason to go on if this node is down.
+   if ($hosts_down)
+diff -Nurp ganglia-3.3.8/web/get_context.php /usr/share/ganglia-webfrontend/get_context.php
+--- ganglia-3.3.8/web/get_context.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/get_context.php	2014-10-22 03:34:43.000000000 +0800
+@@ -2,8 +2,8 @@
+ 
+ include_once "./functions.php";
+ 
+-$meta_designator = "Grid";
+-$cluster_designator = "Cluster Overview";
++$meta_designator = "网格";
++$cluster_designator = "集群概述";
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+ // Determine which context we are in. Context is not specifically specified
+diff -Nurp ganglia-3.3.8/web/graph_all_periods.php /usr/share/ganglia-webfrontend/graph_all_periods.php
+--- ganglia-3.3.8/web/graph_all_periods.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/graph_all_periods.php	2014-10-22 09:40:52.000000000 +0800
+@@ -81,7 +81,7 @@ else if (isset($_GET['c']) && ($_GET['c'
+ else if (is_array($_GET['hreg']))
+   $description = join(",", $_GET['hreg']);
+ else
+-  $description = "Unknown";
++  $description = "未知";
+ 
+ if (isset($_GET['g'])) 
+   $metric_description = $_GET['g'];
+@@ -90,7 +90,7 @@ else if ( isset($_GET['m'] ))
+ else if (is_array($_GET['mreg']) )
+   $metric_description = join(",", $_GET['mreg']);
+ else
+-  $metric_description = "Unknown";
++  $metric_description = "未知";
+ 
+ 
+ if ( $conf['graph_engine'] == "flot" ) {
+@@ -125,16 +125,16 @@ if ( ! isset($_GET['embed'] ) ) {
+ <?php
+ if ( ! isset($_REQUEST['mobile']) ) {
+ ?>
+-<div id="popup-dialog" style="display: none" title="Inspect Graph">
++<div id="popup-dialog" style="display: none" title="查看图表">
+   <div id="popup-dialog-content">
+   </div>
+ </div>
+ <?php
+ }
+ ?>
+-<div id="metric-actions-dialog" style="display: none" title="Metric Actions">
++<div id="metric-actions-dialog" style="display: none" title="指标操作">
+ <div id="metric-actions-dialog-content">
+-	Available Metric actions.
++	合适的指标操作.
+ </div>
+ </div>
+ <form>
+@@ -143,9 +143,9 @@ if ( isset($_REQUEST['mobile'])) {
+ ?>
+     <div data-role="page" class="ganglia-mobile" id="view-home">
+     <div data-role="header">
+-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
++      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
+       <h3><?php if (isset($_GET['g'])) echo $_GET['g']; else echo $_GET['m']; ?></h3>
+-      <a href="#mobile-home">Home</a>
++      <a href="#mobile-home">主页</a>
+     </div>
+     <div data-role="content">
+ <?php
+@@ -154,13 +154,13 @@ if ( isset($_REQUEST['mobile'])) {
+ // Skip printing if this is an embedded graph e.g. from Aggregate graph screen
+ if ( ! isset($_REQUEST['embed'] )  ) {
+ ?>
+-  <b>Host/Cluster/Host Regex: </b><?php print $description ?>&nbsp;<b>Metric/Graph/Metric Regex: </b><?php print $metric_description;?>&nbsp;&nbsp;
++  <b>主机/集群/主机正则表达式: </b><?php print $description ?>&nbsp;<b>指标/图表/指标正则表达式: </b><?php print $metric_description;?>&nbsp;&nbsp;
+ <?php }
+ 
+ if ( ! isset($_REQUEST['mobile'] )  ) {
+ 
+ ?>
+-<input title="Hide/Show Events" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label class="show_event_text" for="show_all_events">Hide/Show Events All Graphs</label><br />
++<input title="隐藏/显示事件" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label class="show_event_text" for="show_all_events">隐藏/显示事件的所有图表</label><br />
+ <?php
+ } // end of if ( ! isset($_REQUEST['mobile'] )  ) {
+ 
+@@ -185,23 +185,23 @@ foreach ( $conf['time_ranges'] as $key =
+   
+     // Check if it's an aggregate graph
+     if ( $is_aggregate  ) {
+-      print '<button class="cupid-green" title="Metric Actions - Add to View, etc" onclick="metricActionsAggregateGraph(\'' . $query_string . '\'); return false;">+</button>';
++      print '<button class="cupid-green" title="指标操作 - 添加至视图等" onclick="metricActionsAggregateGraph(\'' . $query_string . '\'); return false;">+</button>';
+     }
+   
+-    print ' <button title="Export to CSV" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;csv=1\';return false">CSV</button> ';
++    print ' <button title="导出CSV" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;csv=1\';return false">CSV</button> ';
+   
+-    print ' <button title="Export to JSON" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;json=1\';return false;">JSON</button> ';
++    print ' <button title="导出JSON" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;json=1\';return false;">JSON</button> ';
+   
+      // Check if it's an aggregate graph
+     if ( $is_aggregate  ) {
+-	print ' <button title="Decompose aggregate graph" class="shiny-blue" onClick="openDecompose(\'?r=' . $key . $query_string  . '&amp;dg=1\');return false;">Decompose</button>';
++	print ' <button title="分解汇总图表" class="shiny-blue" onClick="openDecompose(\'?r=' . $key . $query_string  . '&amp;dg=1\');return false;">分解</button>';
+     }
+    
+-    print ' <button title="Inspect Graph" onClick="inspectGraph(\'r=' . $key . $query_string  . '\'); return false;" class="shiny-blue">Inspect</button>';
++    print ' <button title="查看图表" onClick="inspectGraph(\'r=' . $key . $query_string  . '\'); return false;" class="shiny-blue">查看</button>';
+ 
+     $graphId = $GRAPH_BASE_ID . $key;
+ 
+-    print ' <input title="Hide/Show Events" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $key . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $key . '">Hide/Show Events</label>';
++    print ' <input title="隐藏/显示事件" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $key . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $key . '">隐藏/显示事件</label>';
+ 
+   } 
+ 
+diff -Nurp ganglia-3.3.8/web/graph.php /usr/share/ganglia-webfrontend/graph.php
+--- ganglia-3.3.8/web/graph.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/graph.php	2014-10-23 01:10:23.000000000 +0800
+@@ -741,7 +741,7 @@ if ( $user['json_output'] || 
+   if ( $user['json_output'] ) {
+ 
+     header("Content-type: application/json");
+-    header("Content-Disposition: inline; filename=\"ganglia-metrics.json\"");
++    header("Content-Disposition: inline; filename=\"lxmt-metrics.json\"");
+     print json_encode($output_array);
+ 
+   }
+@@ -769,7 +769,7 @@ if ( $user['json_output'] || 
+ 
+   if ( $user['csv_output'] ) {
+     header("Content-Type: application/csv");
+-    header("Content-Disposition: inline; filename=\"ganglia-metrics.csv\"");
++    header("Content-Disposition: inline; filename=\"lxmt-metrics.csv\"");
+ 
+     print "Timestamp";
+ 
+diff -Nurp ganglia-3.3.8/web/header.php /usr/share/ganglia-webfrontend/header.php
+--- ganglia-3.3.8/web/header.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/header.php	2014-10-23 03:03:03.000000000 +0800
+@@ -82,7 +82,7 @@ $data->assign("images","./templates/${co
+ 
+ $data->assign( "date", date("r"));
+ 
+-# The page to go to when "Get Fresh Data" is pressed.
++# The page to go to when "获取最新数据" is pressed.
+ if (isset($page))
+       $data->assign("page",$page);
+ else
+@@ -135,16 +135,16 @@ $data->assign("cluster_url", $cluster_ur
+ $alt_view = "";
+ 
+ if ($context == "cluster") {
+-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url';return false;\">Physical View</button>";
++   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url';return false;\">物理视图</button>";
+ } elseif ($context == "physical") {
+-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url';return false;\">Full View</button>";
++   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url';return false;\">集群视图</button>";
+ } elseif ($context=="node") {
+-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url&amp;h=$node_url&amp;$get_metric_string';return false;\">Host View</button>";
++   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url&amp;h=$node_url&amp;$get_metric_string';return false;\">主机视图</button>";
+ } elseif ($context=="host") {
+-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url&amp;h=$node_url';return false;\">Node View</button>";
++   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url&amp;h=$node_url';return false;\">节点视图</button>";
+ } elseif ( $context == "views") {
+    if(  checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
+-       $alt_view = '<button onclick="return false" id="create_view_button">Create View</button>';
++       $alt_view = '<button onclick="return false" id="create_view_button">创建视图</button>';
+    }
+ }
+ 
+@@ -180,11 +180,11 @@ if (($context != 'views') && ($context !
+     $node_menu .= hiddenvar("c", $clustername);
+   } else if ($context == "decompose_graph") {
+     $node_menu .= '<input type="hidden" name="dg" value="1">';
+-    $node_menu .= "Decompose Graph";
++    $node_menu .= "分解图表";
+   }  else {
+     # No cluster has been specified, so drop in a list
+     $node_menu .= "<select name=\"c\" OnChange=\"ganglia_form.submit();\">\n";
+-    $node_menu .= "<option value=\"\">--Choose a Source\n";
++    $node_menu .= "<option value=\"\">--选择一个源\n";
+     ksort($grid);
+     foreach ($grid as $k => $v) {
+       if ($k == $self) continue;
+@@ -205,10 +205,10 @@ if (($context != 'views') && ($context !
+   if ($clustername && !$hostname) {
+     # Drop in a host list if we have hosts
+     if (!$showhosts) {
+-      $node_menu .= "[Summary Only]";
++      $node_menu .= "[仅显示概述]";
+     } elseif (is_array($hosts_up) || is_array($hosts_down)) {
+       $node_menu .= "<select name=\"h\" OnChange=\"ganglia_form.submit();\">";
+-      $node_menu .= "<option value=\"\">--Choose a Node</option>";
++      $node_menu .= "<option value=\"\">--选择一个节点</option>";
+       if (is_array($hosts_up)) {
+         uksort($hosts_up, "strnatcmp");
+         foreach ($hosts_up as $k=> $v) {
+@@ -261,14 +261,30 @@ if (!$physical) {
+    if ($cs or $ce)
+       $context_ranges[]="custom";
+ 
+-   $range_menu = "<B>Last</B>&nbsp;&nbsp;";
++   $range_menu = "<B>最近</B>&nbsp;&nbsp;";
+    foreach ($context_ranges as $v) {
+       $url=rawurlencode($v);
+       if ($v == $range)
+ $checked = "checked=\"checked\"";
+       else
+ $checked = "";
+-      $range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
++#			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
++			if ($v == "hour")
++							$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1小时</label>";
++	 else if ($v == "2hr")
++	  	$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">2小时</label>";
++	 else if ($v == "4hr")
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">4小时</label>";
++	 else	if ($v == "day")
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1天</label>";
++	 else	if ($v == "week")
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1周</label>";
++	 else	if ($v == "month")
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1月</label>";
++	 else	if ($v == "year")
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1年</label>";
++	else
++			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
+ 
+    }
+ 
+@@ -328,14 +344,19 @@ if ($context == "meta" or $context == "c
+     $context_sorts[]="by hosts down";
+   }
+ 
+-  $sort_menu = "<B>Sorted</B>&nbsp;&nbsp;";
++  $sort_menu = "<B>排序</B>&nbsp;&nbsp;";
+   foreach ($context_sorts as $v) {
+     $url=rawurlencode($v);
+     if ($v == $sort)
+       $checked = "checked=\"checked\"";
+     else
+-      $checked = "";
+-    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">$v</label>";
++						$checked = "";
++		if($v == "ascending")
++    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">升序</label>";
++		if($v == "descending")
++    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">降序</label>";
++		if($v == "by name")
++    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">名称</label>";
+   }
+  }
+ $data->assign("sort_menu", $sort_menu );
+@@ -389,14 +410,14 @@ $custom_time = "";
+ if ( in_array($context , array ("meta", "cluster", "host", "views", "decompose_graph", "compare_hosts") ) ) {
+    $examples = "Feb 27 2007 00:00, 2/27/2007, 27.2.2007, now -1 week,"
+       . " -2 days, start + 1 hour, etc.";
+-   $custom_time = "&nbsp;&nbsp;or <span class=\"nobr\">from <input type=\"TEXT\" title=\"$examples\" NAME=\"cs\" ID=\"datepicker-cs\" SIZE=\"17\"";
++   $custom_time = "&nbsp;&nbsp;或者 <span class=\"nobr\">从 <input type=\"TEXT\" title=\"$examples\" NAME=\"cs\" ID=\"datepicker-cs\" SIZE=\"17\"";
+    if ($cs)
+       $custom_time .= " value=\"$cs\"";
+-   $custom_time .= "> to <input type=\"TEXT\" title=\"$examples\" name=\"ce\" ID=\"datepicker-ce\" SIZE=\"17\"";
++   $custom_time .= "> 至 <input type=\"TEXT\" title=\"$examples\" name=\"ce\" ID=\"datepicker-ce\" SIZE=\"17\"";
+    if ($ce)
+       $custom_time .= " value=\"$ce\"";
+-   $custom_time .= "> <input type=\"submit\" value=\"Go\">\n";
+-   $custom_time .= "<input type=\"button\" value=\"Clear\" onclick=\"ganglia_submit(1)\"></span>\n";
++   $custom_time .= "> <input type=\"submit\" value=\"跳转\">\n";
++   $custom_time .= "<input type=\"button\" value=\"清除\" onclick=\"ganglia_submit(1)\"></span>\n";
+ #      $custom_time .= $calendar;
+    $data->assign("custom_time", $custom_time);
+ 
+@@ -429,7 +450,7 @@ if ( $context == "cluster" ) {
+   else
+     $max_graphs = $conf['max_graphs'];
+   
+-  $max_graphs_values = "<option value=0>all</option>";
++  $max_graphs_values = "<option value=0>所有</option>";
+   foreach ( $max_graphs_options as $key => $value ) {
+       if ( $max_graphs == $value )
+ $max_graphs_values .= "<option selected>" . $value . "</option>";
+@@ -438,9 +459,9 @@ $max_graphs_values .= "<option>" . $valu
+ 
+   }
+ 
+-  $data->assign("additional_filter_options", 'Show only nodes matching <input name=host_regex ' .$set_host_regex_value . '>'
+-   . '<input class=submit_button type="SUBMIT" VALUE="Filter">'
+-   . '&nbsp;<span class="nobr">Max graphs to show <select onChange="ganglia_submit();" name="max_graphs">' . $max_graphs_values . '</select></span>'
++  $data->assign("additional_filter_options", '仅显示匹配的节点 <input name=host_regex ' .$set_host_regex_value . '>'
++   . '<input class=submit_button type="SUBMIT" VALUE="筛选">'
++   . '&nbsp;<span class="nobr">最多显示图形 <select onChange="ganglia_submit();" name="max_graphs">' . $max_graphs_values . '</select></span>'
+     );
+ } else
+   $data->assign("additional_filter_options", '');
+@@ -463,7 +484,7 @@ $data->assign('view_name', $user['viewna
+ 
+ $additional_buttons = "";
+ if ($context == 'views' || $context == 'decompose_graph' || $context == 'host') {
+-  $additional_buttons = '<input title="Hide/Show Events" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label for="show_all_events">Hide/Show Events</label>';
++  $additional_buttons = '<input title="显示/隐藏事件" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label for="show_all_events">显示/隐藏事件</label>';
+ }
+ $data->assign('additional_buttons', $additional_buttons);
+ 
+diff -Nurp ganglia-3.3.8/web/host_view.php /usr/share/ganglia-webfrontend/host_view.php
+--- ganglia-3.3.8/web/host_view.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/host_view.php	2014-10-22 09:41:48.000000000 +0800
+@@ -54,11 +54,11 @@ foreach ( $reports["included_reports"] a
+   if ( ! in_array( $report_name, $reports["excluded_reports"] ) ) {
+     $graph_anchor = "<a href=\"./graph_all_periods.php?$graph_args&amp;g=" . $report_name . "&amp;z=large&amp;c=$cluster_url\">";
+ 
+-    $addMetricBtn = "<button class=\"cupid-green\" title=\"Metric Actions - Add to View, etc\" onclick=\"metricActions('{$hostname}','{$report_name}','graph','');  return false;\">+</button>";
++    $addMetricBtn = "<button class=\"cupid-green\" title=\"指标操作 - 添加至视图等\" onclick=\"metricActions('{$hostname}','{$report_name}','graph','');  return false;\">+</button>";
+ 
+-    $csvBtn = "<button title=\"Export to CSV\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;csv=1';return false;\">CSV</button>";
++    $csvBtn = "<button title=\"导出CSV\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;csv=1';return false;\">CSV</button>";
+ 
+-    $jsonBtn = "<button title=\"Export to JSON\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;json=1';return false;\">JSON</button>";
++    $jsonBtn = "<button title=\"导出JSON\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;json=1';return false;\">JSON</button>";
+ 
+     if ( $conf['graph_engine'] == "flot" ) {
+       $optional_reports .= $graph_anchor . "</a>";
+@@ -71,8 +71,8 @@ foreach ( $reports["included_reports"] a
+     } else {
+       $optional_reports .= "<div class='img_view'>";
+       $graphId = $GRAPH_BASE_ID . $report_name;
+-      $inspectBtn = "<button title=\"Inspect Graph\" onClick=\"inspectGraph('{$graph_args}&amp;g={$report_name}&amp;z=large&amp;c={$cluster_url}'); return false;\" class=\"shiny-blue\">Inspect</button>";
+-      $showEventBtn = '<input title="Hide/Show Events" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $report_name . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $report_name . '">Hide/Show Events</label>';
++      $inspectBtn = "<button title=\"查看图表\" onClick=\"inspectGraph('{$graph_args}&amp;g={$report_name}&amp;z=large&amp;c={$cluster_url}'); return false;\" class=\"shiny-blue\">查看</button>";
++      $showEventBtn = '<input title="隐藏/显示事件" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $report_name . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $report_name . '">隐藏/显示事件</label>';
+       if(checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf))
+         $optional_reports .= $addMetricBtn . '&nbsp;';
+       $optional_reports .= $csvBtn . '&nbsp;' . $jsonBtn . '&nbsp;' .$inspectBtn . '&nbsp;' . $showEventBtn . "<br />" . $graph_anchor . "<img id=\"" . $graphId . "\" $additional_cluster_img_html_args border=\"0\" title=\"$cluster_url\" SRC=\"./graph.php?$graph_args&amp;g=" . $report_name ."&amp;z=medium&amp;c=$cluster_url\" style=\"margin-top:5px;\" /></a></div>";
+diff -Nurp ganglia-3.3.8/web/index.php /usr/share/ganglia-webfrontend/index.php
+--- ganglia-3.3.8/web/index.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/index.php	2014-10-22 03:15:47.000000000 +0800
+@@ -34,48 +34,48 @@ catch (Exception $e)
+ $GHOME = ".";
+ 
+ if ($context == "meta" or $context == "control") {
+-      $title = "$self $meta_designator Report";
++      $title = "$self $meta_designator 报告";
+       include_once "./header.php";
+       include_once "./meta_view.php";
+ } else if ($context == "tree") {
+-      $title = "$self $meta_designator Tree";
++      $title = "$self $meta_designator 树";
+       include_once "./header.php";
+       include_once "./grid_tree.php";
+ } else if ($context == "cluster" or $context == "cluster-summary") {
+       if (preg_match('/cluster/i', $clustername))
+-         $title = "$clustername Report";
++         $title = "$clustername 报告";
+       else
+-         $title = "$clustername Cluster Report";
++         $title = "$clustername 集群报告";
+ 
+       include_once "./header.php";
+       include_once "./cluster_view.php";
+ } else if ($context == "physical") {
+-      $title = "$clustername Physical View";
++      $title = "$clustername 物理视图";
+       include_once "./header.php";
+       include_once "./physical_view.php";
+ } else if ($context == "node") {
+-      $title = "$hostname Node View";
++      $title = "$hostname 节点视图";
+       include_once "./header.php";
+       include_once "./show_node.php";
+ } else if ($context == "host") {
+-      $title = "$hostname Host Report";
++      $title = "$hostname 主机报告";
+       include_once "./header.php";
+       include_once "./host_view.php";
+ } else if ($context == "views") {
+-      $title = "$viewname view";
++      $title = "$viewname 视图";
+       include_once "./header.php";
+       include_once "./views_view.php";
+ } else if ($context == "compare_hosts") {
+-      $title = "Compare Hosts";
++      $title = "主机比较";
+       include_once "./header.php";
+       include_once "./compare_hosts.php";
+ } else if ($context == "decompose_graph") {
+-      $title = "Decompose graph";
++      $title = "分解图";
+       include_once "./header.php";
+       include_once "./decompose_graph.php";
+ } else {
+-      $title = "Unknown Context";
+-      print "Unknown Context Error: Have you specified a host but not a cluster?.";
++      $title = "未知上下文";
++      print "未知上下文错误: 你指定的是主机而不是集群?.";
+ }
+ include_once "./footer.php";
+ 
+diff -Nurp ganglia-3.3.8/web/inspect_graph.php /usr/share/ganglia-webfrontend/inspect_graph.php
+--- ganglia-3.3.8/web/inspect_graph.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/inspect_graph.php	2014-10-23 01:27:12.000000000 +0800
+@@ -16,7 +16,7 @@
+ 
+ <div id="placeholder" style="width:800px;height:500px;"></div>
+ 
+-<p id="choices">Show:</p>
++<p id="choices">显示:</p>
+ <?php
+ 
+ $base_url = str_replace("inspect_graph.php", "", $_SERVER["SCRIPT_NAME"]);
+diff -Nurp ganglia-3.3.8/web/js/jquery.mobile-1.0.min.js /usr/share/ganglia-webfrontend/js/jquery.mobile-1.0.min.js
+--- ganglia-3.3.8/web/js/jquery.mobile-1.0.min.js	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/js/jquery.mobile-1.0.min.js	2014-10-22 02:34:40.000000000 +0800
+@@ -99,7 +99,7 @@ h=b.attr("id"),g=this.options,i="data-"+
+ b.jqmData("counttheme")||g.countTheme;o=true;d.detach().wrap("<div "+i+"role='page' "+i+"url='"+e+"' "+i+"theme='"+A+"' "+i+"count-theme='"+z+"'><div "+i+"role='content'></div></div>").parent().before("<div "+i+"role='header' "+i+"theme='"+g.headerTheme+"'><div class='ui-title'>"+n+"</div></div>").after(l?a("<div "+i+"role='footer' "+i+"id='"+l+"'>"):"").parent().appendTo(a.mobile.pageContainer).page();d=c.find("a:first");d.length||(d=a("<a/>").html(k||n).prependTo(c.empty()));d.attr("href","#"+e)}).listview();
+ o&&d.is(":jqmData(external-page='true')")&&d.data("page").options.domCache===false&&d.unbind("pagehide.remove").bind("pagehide.remove",function(b,c){var e=c.nextPage;c.nextPage&&(e=e.jqmData("url"),e.indexOf(f+"&"+a.mobile.subPageUrlKey)!==0&&(k.childPages().remove(),d.remove()))})},childPages:function(){var b=this.parentPage.jqmData("url");return a(":jqmData(url^='"+b+"&"+a.mobile.subPageUrlKey+"')")}});a(document).bind("pagecreate create",function(b){a(a.mobile.listview.prototype.options.initSelector,
+ b.target).listview()})})(jQuery);
+-(function(a){a.mobile.listview.prototype.options.filter=false;a.mobile.listview.prototype.options.filterPlaceholder="Filter items...";a.mobile.listview.prototype.options.filterTheme="c";a.mobile.listview.prototype.options.filterCallback=function(a,b){return a.toLowerCase().indexOf(b)===-1};a(":jqmData(role='listview')").live("listviewcreate",function(){var e=a(this),b=e.data("listview");if(b.options.filter){var d=a("<form>",{"class":"ui-listview-filter ui-bar-"+b.options.filterTheme,role:"search"});
++(function(a){a.mobile.listview.prototype.options.filter=false;a.mobile.listview.prototype.options.filterPlaceholder="筛选项...";a.mobile.listview.prototype.options.filterTheme="c";a.mobile.listview.prototype.options.filterCallback=function(a,b){return a.toLowerCase().indexOf(b)===-1};a(":jqmData(role='listview')").live("listviewcreate",function(){var e=a(this),b=e.data("listview");if(b.options.filter){var d=a("<form>",{"class":"ui-listview-filter ui-bar-"+b.options.filterTheme,role:"search"});
+ a("<input>",{placeholder:b.options.filterPlaceholder}).attr("data-"+a.mobile.ns+"type","search").jqmData("lastval","").bind("keyup change",function(){var d=a(this),c=this.value.toLowerCase(),h=null,h=d.jqmData("lastval")+"",g=false,i="";d.jqmData("lastval",c);i=c.substr(0,h.length-1).replace(h,"");h=c.length<h.length||i.length!=c.length-h.length?e.children():e.children(":not(.ui-screen-hidden)");if(c){for(var k=h.length-1;k>=0;k--)d=a(h[k]),i=d.jqmData("filtertext")||d.text(),d.is("li:jqmData(role=list-divider)")?
+ (d.toggleClass("ui-filter-hidequeue",!g),g=false):b.options.filterCallback(i,c)?d.toggleClass("ui-filter-hidequeue",true):g=true;h.filter(":not(.ui-filter-hidequeue)").toggleClass("ui-screen-hidden",false);h.filter(".ui-filter-hidequeue").toggleClass("ui-screen-hidden",true).toggleClass("ui-filter-hidequeue",false)}else h.toggleClass("ui-screen-hidden",false);b._refreshCorners()}).appendTo(d).textinput();a(this).jqmData("inset")&&d.addClass("ui-listview-filter-inset");d.bind("submit",function(){return false}).insertBefore(e)}})})(jQuery);
+ (function(a){a(document).bind("pagecreate create",function(e){a(":jqmData(role='nojs')",e.target).addClass("ui-nojs")})})(jQuery);
+diff -Nurp ganglia-3.3.8/web/js/jquery-ui-timepicker-addon.js /usr/share/ganglia-webfrontend/js/jquery-ui-timepicker-addon.js
+--- ganglia-3.3.8/web/js/jquery-ui-timepicker-addon.js	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/js/jquery-ui-timepicker-addon.js	2014-10-22 01:14:28.000000000 +0800
+@@ -30,20 +30,20 @@ $.extend($.ui, { timepicker: { version: 
+ function Timepicker() {
+ 	this.regional = []; // Available regional settings, indexed by language code
+ 	this.regional[''] = { // Default regional settings
+-		currentText: 'Now',
+-		closeText: 'Done',
++		currentText: '此刻',
++		closeText: '完成',
+ 		ampm: false,
+ 		amNames: ['AM', 'A'],
+ 		pmNames: ['PM', 'P'],
+ 		timeFormat: 'hh:mm tt',
+ 		timeSuffix: '',
+-		timeOnlyTitle: 'Choose Time',
+-		timeText: 'Time',
+-		hourText: 'Hour',
+-		minuteText: 'Minute',
+-		secondText: 'Second',
+-		millisecText: 'Millisecond',
+-		timezoneText: 'Time Zone'
++		timeOnlyTitle: '选择时间',
++		timeText: '时间',
++		hourText: '小时',
++		minuteText: '分钟',
++		secondText: '秒',
++		millisecText: '毫秒',
++		timezoneText: '时间区域'
+ 	};
+ 	this._defaults = { // Global defaults for all the datetime picker instances
+ 		showButtonPanel: true,
+diff -Nurp ganglia-3.3.8/web/meta_view.php /usr/share/ganglia-webfrontend/meta_view.php
+--- ganglia-3.3.8/web/meta_view.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/meta_view.php	2014-10-22 07:35:28.000000000 +0800
+@@ -85,7 +85,7 @@ foreach ( $sorted_sources as $source => 
+                   # Negative control room values means dont display grid summary.
+                   if ($controlroom < 0) continue;
+                   $num_sources = count($sorted_sources) - 1;
+-                  $name = "$self $meta_designator ($num_sources sources)";
++                  $name = "$self $meta_designator ($num_sources 个源)";
+                   $graph_url = "me=$sourceurl&amp;$get_metric_string";
+                   $url = "./?$get_metric_string";
+                }
+@@ -97,7 +97,7 @@ foreach ( $sorted_sources as $source => 
+                   $authority = $grid[$source]['AUTHORITY'];
+                   $url = "$authority?gw=fwd&amp;gs=$gridstack_url&amp;$get_metric_string";
+                }
+-            $alt_url = "<a href=\"./?t=yes&amp;$get_metric_string\">(tree view)</a>";
++            $alt_url = "<a href=\"./?t=yes&amp;$get_metric_string\">(树视图)</a>";
+             $class = "grid";
+          }
+       else
+@@ -107,7 +107,7 @@ foreach ( $sorted_sources as $source => 
+             $localtime = $grid[$source]['LOCALTIME'];
+             $graph_url = "c=$sourceurl&amp;$get_metric_string&amp;st=$localtime";
+             $url = "./?c=$sourceurl&amp;$get_metric_string";
+-            $alt_url = "<a href=\"./?p=2&amp;$graph_url\">(physical view)</a>";
++            $alt_url = "<a href=\"./?p=2&amp;$graph_url\">(物理视图)</a>";
+             $class = "cluster";
+          }
+ 
+@@ -138,7 +138,7 @@ foreach ( $sorted_sources as $source => 
+       $sources[$source]["base64img"] = "";
+ 
+       if ($localtime)
+-         $sources[$source]["localtime"] = "<font size=\"-1\">Localtime:</font><br>&nbsp;&nbsp;" 
++         $sources[$source]["localtime"] = "<font size=\"-1\">本地时间:</font><br>&nbsp;&nbsp;" 
+             . date("Y-m-d H:i", $localtime);
+ 
+       # I dont like this either, but we need to have private clusters because some
+@@ -148,10 +148,29 @@ foreach ( $sorted_sources as $source => 
+             $sources[$source]["alt_view"] = "<FONT SIZE=\"-2\">$alt_url</FONT>";
+             $sources[$source]["public"] = 1;
+             if ($cluster_load)
+-               $sources[$source]["cluster_load"] = "<font size=\"-1\">Current Load Avg (15, 5, 1m):</font>"
++               $sources[$source]["cluster_load"] = "<font size=\"-1\">当前平均负载 (15, 5, 1分钟):</font>"
+                   ."<br>&nbsp;&nbsp;<b>$cluster_load</b>";
+-            if (isset($cluster_util))
+-               $sources[$source]["cluster_util"] = "<font size=\"-1\">Avg Utilization (last $range):</font>"
++						if (isset($cluster_util))
++							 if ($range == "hour")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1小时):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "2hr")
++	             $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 2小时):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "4hr")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 4小时):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "day")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1天):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "week")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1周):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "month")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1月):</font>"
++                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
++							 if ($range == "year")
++               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1年):</font>"
+                   ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+             $sources[$source]["num_nodes"] = $grid[$source]["HOSTS_UP"];
+             $sources[$source]["num_dead_nodes"] = $grid[$source]["HOSTS_DOWN"];
+diff -Nurp ganglia-3.3.8/web/mobile_helper.php /usr/share/ganglia-webfrontend/mobile_helper.php
+--- ganglia-3.3.8/web/mobile_helper.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/mobile_helper.php	2014-10-22 02:50:10.000000000 +0800
+@@ -13,9 +13,9 @@ if ( isset($_GET['view_name'])) {
+ ?>  
+   <div data-role="page" class="ganglia-mobile" id="view-home">
+     <div data-role="header">
+-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
+-      <h1>View <?php print $_GET['view_name']; ?></h1>
+-      <a href="#mobile-home">Home</a>
++      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
++      <h1>视图 <?php print $_GET['view_name']; ?></h1>
++      <a href="#mobile-home">主页</a>
+       <div data-role="navbar">
+ 	<ul>
+   <?php
+@@ -72,7 +72,7 @@ if ( isset($_GET['view_name'])) {
+ 	  <IMG ALT=\"" . $element['hostname'] . " - " . $element['name'] . "\" BORDER=0 SRC=\"./graph.php?" . $element['graph_args'] . "&z=mobile" . $range_args .  "\"></A>";
+ 	}
+       } else {
+-	print "No graphs defined for this view. Please add some";
++	print " 没有为此视图定义图表.请添加";
+       }
+ 	
+ 	
+@@ -92,9 +92,9 @@ if ( isset($_GET['show_cluster_metrics']
+ ?>  
+   <div data-role="page" class="ganglia-mobile" id="viewhost-<?php print $hostname; ?>">
+     <div data-role="header" data-position="fixed">
+-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
+-      <h3>Cluster <?php print $clustername; ?></h3>
+-      <a href="#mobile-home">Home</a>
++      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
++      <h3>集群 <?php print $clustername; ?></h3>
++      <a href="#mobile-home">主页</a>
+         <div data-role="navbar">
+ 	<ul>
+   <?php
+@@ -175,9 +175,9 @@ if ( isset($_GET['show_host_metrics'])) 
+ ?>
+   <div data-role="page" class="ganglia-mobile" id="viewhost-<?php print $hostname; ?>">
+     <div data-role="header" data-position="fixed">
+-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
+-      <h3>Host <?php print $hostname; ?></h3>
+-      <a href="#mobile-home">Home</a>
++      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
++      <h3>主机 <?php print $hostname; ?></h3>
++      <a href="#mobile-home">主页</a>
+         <div data-role="navbar">
+ 	<ul>
+   <?php
+diff -Nurp ganglia-3.3.8/web/mobile.php /usr/share/ganglia-webfrontend/mobile.php
+--- ganglia-3.3.8/web/mobile.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/mobile.php	2014-10-23 02:42:46.000000000 +0800
+@@ -13,8 +13,9 @@ retrieve_metrics_cache();
+ <!DOCTYPE html> 
+ <html> 
+ <head> 
+-<title>Ganglia Mobile</title> 
++<title>凝思系统监控软件便携终端视图</title> 
+ <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
++<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+ <link rel="stylesheet" href="css/jquery.mobile-1.0.min.css" />
+ <script src="js/jquery-1.7.1.min.js"></script>
+ <script src="js/jquery.mobile-1.0.min.js"></script>
+@@ -42,22 +43,22 @@ dt code, dd code { font-size:1.3em; line
+ ?>
+ <div data-role="page" class="ganglia-mobile" id="mobile-home">
+   <div data-role="header">
+-    <h1>Ganglia Mobile</h1>
++    <h1>凝思系统监控软件便携终端视图</h1>
+   </div>
+   <div data-role="content">
+-    Please select a category:<p>
++    请选择一个类别:<p>
+     <ul data-role="listview" data-theme="g">
+-      <li><a href="#views">Views</a><span class="ui-li-count"><?php print sizeof($available_views); ?></span></li>
++      <li><a href="#views">视图</a><span class="ui-li-count"><?php print sizeof($available_views); ?></span></li>
+       <?php
+ 	if ( sizeof($cluster_names) == 1) {
+            print '<li><a href="#cluster-' . str_replace(" ", "_", $clustername) . '">Clusters</a><span class="ui-li-count">1</span></li>';
+         } else {
+       ?>
+-      <li><a href="#clusters">Clusters</a><span class="ui-li-count"><?php print sizeof($cluster_names); ?></span></li>
++      <li><a href="#clusters">集群</a><span class="ui-li-count"><?php print sizeof($cluster_names); ?></span></li>
+       <?php
+       }
+       ?>
+-      <li><a href="#search">Search</a></li>
++      <li><a href="#search">搜索</a></li>
+     </ul>
+   </div><!-- /content -->
+ </div><!-- /page -->
+@@ -66,7 +67,7 @@ if ( sizeof($cluster_names) > 1 ) {
+ ?>
+  <div data-role="page" class="ganglia-mobile" id="clusters">
+   <div data-role="header">
+-	  <h1>Ganglia Clusters</h1>
++	  <h1>凝思系统监控软件集群</h1>
+   </div>
+   <div data-role="content">	
+     <ul data-role="listview" data-theme="g">
+@@ -89,12 +90,12 @@ foreach ( $cluster_names as $index => $c
+ ?>
+   <div data-role="page" class="ganglia-mobile" id="cluster-<?php print str_replace(" ", "_", $clustername); ?>">
+     <div data-role="header">
+-	    <h1>Cluster <?php print $clustername; ?></h1>
++	    <h1>集群 <?php print $clustername; ?></h1>
+     </div>
+     <div data-role="content">	
+       <ul data-role="listview" data-filter="true" data-theme="g">
+ 	<?php
+-	  print '<li><a href="mobile_helper.php?show_cluster_metrics=1&c=' . $clustername . '&r=' . $conf['default_time_range'] . '&cs=&ce=">Cluster Summary</a></li>';  
++	  print '<li><a href="mobile_helper.php?show_cluster_metrics=1&c=' . $clustername . '&r=' . $conf['default_time_range'] . '&cs=&ce=">集群概述</a></li>';  
+ 	// List all hosts in the cluster
+ 	asort($cluster_array[$clustername]);
+ 	foreach ( $cluster_array[$clustername] as $index => $hostname ) {
+@@ -112,7 +113,7 @@ foreach ( $cluster_names as $index => $c
+ ?>
+ <div data-role="page" class="ganglia-mobile" id="views">
+   <div data-role="header">
+-	  <h1>Ganglia Views</h1>
++	  <h1>凝思系统监控软件视图</h1>
+   </div>
+   <div data-role="content">
+     <ul data-role="listview" data-filter="true" data-theme="g">
+@@ -139,12 +140,12 @@ $(function(){
+ </script>
+ <div data-role="page" class="ganglia-mobile" id="search">
+   <div data-role="header">
+-	  <h1>Search</h1>
++	  <h1>搜索</h1>
+   </div>
+   <div data-role="content">
+     <p>
+       <label>
+-	Search for host or a metric: <br />
++	搜索主机或者一个指标: <br />
+ 	<input type="text" name="q" id="search-field-q" on size=40 />
+       </label>
+     </p>
+diff -Nurp ganglia-3.3.8/web/node_legend.html /usr/share/ganglia-webfrontend/node_legend.html
+--- ganglia-3.3.8/web/node_legend.html	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/node_legend.html	2014-10-22 05:20:48.000000000 +0800
+@@ -8,35 +8,34 @@
+ <BODY BGCOLOR="#FFFFFF">
+ 
+ <TABLE CELLSPACING=3 CELLPADDING=6 BORDER=1>
+-<TR><TD COLSPAN=2 CLASS=title>Ganglia Node Image Legend</TD></TR>
++<TR><TD COLSPAN=2 CLASS=title>凝思系统监控软件节点图像说明</TD></TR>
+ <TR>
+-        <TD><B>Node Image</B></TD><TD><B>Meaning</B></TD>
++        <TD><B>节点图像</B></TD><TD><B>含义</B></TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#FF0000>Red</FONT></TD>
+-        <TD>Over 100% Utilization. Utilization is: (1 min load) / (number of CPUs) * 100%.</TD>
++        <TD><FONT COLOR=#FF0000>红色</FONT></TD>
++        <TD>利用率超过100%. 利用率: (1分钟负载) / (处理器数量) * 100%.</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#FF9900>Orange</FONT></TD><TD>75-100%</TD>
++        <TD><FONT COLOR=#FF9900>橙色</FONT></TD><TD>75-100%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#CCCC00>Yellow</FONT></TD><TD>50-74%</TD>
++        <TD><FONT COLOR=#CCCC00>黄色</FONT></TD><TD>50-74%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#009900>Green</FONT></TD><TD>25-49%</TD>
++        <TD><FONT COLOR=#009900>绿色</FONT></TD><TD>25-49%</TD>
+ </TR>
+ <TR>
+-        <TD><FONT COLOR=#0000FF>Blue</FONT></TD><TD>0-24%</TD>
++        <TD><FONT COLOR=#0000FF>蓝色</FONT></TD><TD>0-24%</TD>
+ </TR>
+ <TR>
+-        <TD>Crossbones</TD><TD>The node is dead. We consider a node dead
+-                when the reporting node has not heard from it in 60 sec.
++        <TD>颜色交叉</TD><TD>该节点已死.当记录节点在60秒内监听不到就认为节点死了.
+         </TD>
+ </TR>
+ </TABLE>
+ 
+ <P>
+-<A HREF="./index.php" ALT="Back to Ganglia">Back</A>
++<A HREF="./index.php" ALT="Back to Ganglia">返回</A>
+ </P>
+ </BODY>
+ </HTML>
+diff -Nurp ganglia-3.3.8/web/physical_view.php /usr/share/ganglia-webfrontend/physical_view.php
+--- ganglia-3.3.8/web/physical_view.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/physical_view.php	2014-10-21 05:26:34.000000000 +0800
+@@ -151,8 +151,8 @@ function nodebox($hostname, $verbose, $t
+    $cpus = $cpu_num > 1 ? "($cpu_num)" : "";
+    if ($up)
+       $hardware = 
+-         sprintf("<em>cpu: </em>%.2f<small>G</small> %s ", $cpu_speed, $cpus) .
+-         sprintf("<em>mem: </em>%.2f<small>G</small>",$mem_total_gb);
++         sprintf("<em>处理器: </em>%.2f<small>G</small> %s ", $cpu_speed, $cpus) .
++         sprintf("<em>内存: </em>%.2f<small>G</small>",$mem_total_gb);
+    else $hardware = "&nbsp;";
+ 
+    $row2 = "<tr><td colspan=2>";
+@@ -163,7 +163,7 @@ function nodebox($hostname, $verbose, $t
+       $last_heartbeat = $hostattrs[$hostname]['TN'];
+       $age = $last_heartbeat > 3600 ? uptime($last_heartbeat) : 
+          "${last_heartbeat}s";
+-      $row2 .= "<font size=\"-2\">Last heartbeat $age</font>";
++      $row2 .= "<font size=\"-2\">最近一次心跳 $age</font>";
+       $row3 = $hardware;
+    }
+ 
+diff -Nurp ganglia-3.3.8/web/search.php /usr/share/ganglia-webfrontend/search.php
+--- ganglia-3.3.8/web/search.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/search.php	2014-10-22 03:25:58.000000000 +0800
+@@ -40,9 +40,9 @@ if ( isset($_GET['q']) && $_GET['q'] != 
+ 	$cluster_name = $index_array['cluster'][$host_name];
+ 
+         if ( $mobile )
+-	  $results .= 'Metric: <a onclick="jQuery(\'#jquery-live-search\').slideUp(0)" href="mobile_helper.php?show_host_metrics=1&h=' . $host_name . '&c=' . $cluster_name . '&r=' . $conf['default_time_range'] . '&cs=&ce=">' . $host_name . " (" . $metric_name .  ")</a><br>";
++	  $results .= '指标: <a onclick="jQuery(\'#jquery-live-search\').slideUp(0)" href="mobile_helper.php?show_host_metrics=1&h=' . $host_name . '&c=' . $cluster_name . '&r=' . $conf['default_time_range'] . '&cs=&ce=">' . $host_name . " (" . $metric_name .  ")</a><br>";
+ 	else
+-	  $results .= "Metric: <a target=\"_blank\" href=\"?c=" . $cluster_name . "&h=" . $host_name . "&m=cpu_report&r=hour&s=descending&hc=4&mc=2#metric_" . $metric_name  . "\">" . $host_name . " @ " . $cluster_name .  " (" . $metric_name .  ")</a><br>";
++	  $results .= "指标: <a target=\"_blank\" href=\"?c=" . $cluster_name . "&h=" . $host_name . "&m=cpu_report&r=hour&s=descending&hc=4&mc=2#metric_" . $metric_name  . "\">" . $host_name . " @ " . $cluster_name .  " (" . $metric_name .  ")</a><br>";
+       }
+     }
+   }
+@@ -52,7 +52,7 @@ if ( isset($_GET['q']) && $_GET['q'] != 
+ }
+ 
+ if ( $results == "" ) {
+-  print "No results. Try a different search term. One term only.";
++  print "无此结果. 请尝试不同的搜索词. 只能是一个词.";
+ } else {
+   
+   if ( $mobile ) {
+diff -Nurp ganglia-3.3.8/web/show_node.php /usr/share/ganglia-webfrontend/show_node.php
+--- ganglia-3.3.8/web/show_node.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/show_node.php	2014-10-22 03:08:40.000000000 +0800
+@@ -32,7 +32,7 @@ $data->assign("name", $hostname);
+ # Find the host's physical location in the cluster.
+ $hostattrs = ($up) ? $hosts_up : $hosts_down;
+ list($rack,$rank,$plane) = findlocation($hostattrs);
+-$location = ($rack<0) ? "Unknown" : "Rack $rack, Rank $rank, Plane $plane.";
++$location = ($rack<0) ? "未知" : "经度 $rack, 纬度 $rank, 平面 $plane.";
+ $data->assign("location",$location);
+ 
+ if(isset($hostattrs['ip'])) {
+@@ -59,8 +59,8 @@ $disk_use = $disk_total - $disk_free;
+ $disk_units=$metrics['disk_total']['UNITS'];
+ $part_max_used=$metrics['part_max_used']['VAL'];
+ # Disk metrics are newer (as of 2.5.0), so we check more carefully.
+-$disk = ($disk_total) ? "Using $disk_use of $disk_total $disk_units" : "Unknown";
+-$part_max = ($part_max_used) ? "$part_max_used% used." : "Unknown";
++$disk = ($disk_total) ? "Using $disk_use of $disk_total $disk_units" : "未知";
++$part_max = ($part_max_used) ? "$part_max_used% used." : "未知";
+ 
+ # Compute time of last heartbeat from node's dendrite.
+ $clustertime=$cluster['LOCALTIME'];
+diff -Nurp ganglia-3.3.8/web/templates/default/cluster_host_metric_graphs.tpl /usr/share/ganglia-webfrontend/templates/default/cluster_host_metric_graphs.tpl
+--- ganglia-3.3.8/web/templates/default/cluster_host_metric_graphs.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/cluster_host_metric_graphs.tpl	2014-10-21 02:10:15.000000000 +0800
+@@ -15,7 +15,7 @@
+ 
+ {if isset($node_legend)}
+ <p>
+-(Nodes colored by 1-minute load) | <a href="./node_legend.html">Legend</A>
++(1分钟负载节点颜色) | <a href="./node_legend.html">说明</A>
+ </p>
+ {/if}
+ </center>
+diff -Nurp ganglia-3.3.8/web/templates/default/cluster_overview.tpl /usr/share/ganglia-webfrontend/templates/default/cluster_overview.tpl
+--- ganglia-3.3.8/web/templates/default/cluster_overview.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/cluster_overview.tpl	2014-10-22 07:00:56.000000000 +0800
+@@ -1,8 +1,28 @@
+ <table cellspacing=1 cellpadding=1 width="100%" border=0>
+- <tr><td>CPUs Total:</td><td align=left><B>{$cpu_num}</B></td></tr>
+- <tr><td width="60%">Hosts up:</td><td align=left><B>{$num_nodes}</B></td></tr>
+- <tr><td>Hosts down:</td><td align=left><B>{$num_dead_nodes}</B></td></tr>
++ <tr><td>处理器总数:</td><td align=left><B>{$cpu_num}</B></td></tr>
++ <tr><td width="60%">正在运行主机数:</td><td align=left><B>{$num_nodes}</B></td></tr>
++ <tr><td>已关闭主机数:</td><td align=left><B>{$num_dead_nodes}</B></td></tr>
+  <tr><td>&nbsp;</td></tr>
+- <tr><td colspan=2><font class="nobr">Current Load Avg (15, 5, 1m):</font><br>&nbsp;&nbsp;<b>{$cluster_load}</b></td></tr>
+- <tr><td colspan=2>Avg Utilization (last {$range}):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++ <tr><td colspan=2><font class="nobr">当前平均负载 (15, 5, 1分钟):</font><br>&nbsp;&nbsp;<b>{$cluster_load}</b></td></tr>
++{if $range == "hour"}
++ <tr><td colspan=2>平均利用率 (最近 1小时):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "2hr"}
++ <tr><td colspan=2>平均利用率 (最近 2小时):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "4hr"}
++ <tr><td colspan=2>平均利用率 (最近 4小时):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "day"}
++ <tr><td colspan=2>平均利用率 (最近 1天):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "week"}
++ <tr><td colspan=2>平均利用率 (最近 1周):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "month"}
++ <tr><td colspan=2>平均利用率 (最近 1月):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
++{if $range == "year"}
++ <tr><td colspan=2>平均利用率 (最近 1年):<br>&nbsp;&nbsp;<b>{$cluster_util}</b></td></tr>
++{/if}
+  </table>
+diff -Nurp ganglia-3.3.8/web/templates/default/cluster_refresh.tpl /usr/share/ganglia-webfrontend/templates/default/cluster_refresh.tpl
+--- ganglia-3.3.8/web/templates/default/cluster_refresh.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/cluster_refresh.tpl	2014-10-21 02:15:43.000000000 +0800
+@@ -1 +1 @@
+-{$localtimestamp}<!-- || -->Overview of {$cluster} @ {$localtime}<!-- || -->{include('cluster_overview.tpl')}<!-- || -->{if $pie_args}./pie.php?{$pie_args}{/if}<!-- || -->{if $heatmap && $num_nodes > 0}{$heatmap}{/if}<!-- || -->{include('cluster_host_metric_graphs.tpl')}
++{$localtimestamp}<!-- || -->概述 {$cluster} @ {$localtime}<!-- || -->{include('cluster_overview.tpl')}<!-- || -->{if $pie_args}./pie.php?{$pie_args}{/if}<!-- || -->{if $heatmap && $num_nodes > 0}{$heatmap}{/if}<!-- || -->{include('cluster_host_metric_graphs.tpl')}
+diff -Nurp ganglia-3.3.8/web/templates/default/cluster_view.tpl /usr/share/ganglia-webfrontend/templates/default/cluster_view.tpl
+--- ganglia-3.3.8/web/templates/default/cluster_view.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/cluster_view.tpl	2014-10-22 08:56:55.000000000 +0800
+@@ -112,9 +112,9 @@ $(function() {
+   } 
+ </style>
+ 
+-<div id="metric-actions-dialog" title="Metric Actions">
++<div id="metric-actions-dialog" title="指标操作">
+   <div id="metric-actions-dialog-content">
+-    Available Metric actions.
++    合适的指标操作.
+   </div>
+ </div>
+ 
+@@ -137,7 +137,7 @@ $(function() {
+ <table border="0" cellspacing=4 width="100%">
+ <tr>
+   <td class="title" colspan="2">
+-  <font size="+1" id="cluster_title">Overview of {$cluster} @ {$localtime}</font>
++  <font size="+1" id="cluster_title">概述 {$cluster} @ {$localtime}</font>
+   </td>
+ </tr>
+ 
+@@ -170,7 +170,7 @@ $(function() {
+   <img id="load_pie" src="./pie.php?{$pie_args}" border="0" />
+ {/if}
+ {if $heatmap && $num_nodes > 0}
+-Utilization heatmap<br />
++利用率热视图<br />
+ <div id="heatmap-fig">
+ <script type="text/javascript+protovis">
+ var heatmap = [
+@@ -209,7 +209,7 @@ vis.render();
+ <table width="100%" border=0>
+ <tr>
+   <td class=title colspan="1">
+-  <font size="+1">Stacked Graph - {$metric}</font> 
++  <font size="+1">叠加图 - {$metric}</font> 
+   </td>
+ </tr>
+ <tr>
+@@ -231,19 +231,47 @@ $("#metrics-picker").val("{$metric_name}
+ <table border="0" width="100%">
+   <tr>
+   <td class="title" style="font-size: 12px">
+-  Show Hosts Scaled:
++  主机显示缩放:
+   {foreach $showhosts_levels id showhosts implode=""}
+   <input type="radio" name="sh" value="{$id}" id="shch{$id}" OnClick="ganglia_form.submit();" {$showhosts.checked}><label for="shch{$id}">{$showhosts.name}</label>
+   {/foreach}&nbsp;
+   |
+   <span class="nobr">{$cluster} <strong>{$metric}</strong>
+-  last <strong>{$range}</strong>
+-  sorted <strong>{$sort}</strong></span>
++{if $range == "hour" }
++  最近 <strong>1小时</strong>
++{/if}
++{if $range == "2hr" }
++  最近 <strong>2小时</strong>
++{/if}
++{if $range == "4hr" }
++  最近 <strong>4小时</strong>
++{/if}
++{if $range == "day" }
++  最近 <strong>1天</strong>
++{/if}
++{if $range == "week" }
++  最近 <strong>1周</strong>
++{/if}
++{if $range == "month" }
++  最近 <strong>1月</strong>
++{/if}
++{if $range == "year" }
++  最近 <strong>1年</strong>
++{/if}
++{if $sort == "ascending" }
++  排序 <strong>升序</strong></span>
++{/if}
++{if $sort == "descending" }
++  排序 <strong>降序</strong></span>
++{/if}
++{if $sort == "by name" }
++  排序 <strong>名称</strong></span>
++{/if}
+ {if isset($columns_size_dropdown)}
+   |
+    <font size="-1">
+-   <span class="nobr">Size&nbsp;&nbsp;{$size_menu}</span>
+-   <span class="nobr">Columns&nbsp;&nbsp;{$cols_menu} (0 = metric + reports)</span>
++   <span class="nobr">尺寸&nbsp;&nbsp;{$size_menu}</span>
++   <span class="nobr">列&nbsp;&nbsp;{$cols_menu} (0 = 指标 + 报告)</span>
+    </font>
+ {/if}
+   </td>
+diff -Nurp ganglia-3.3.8/web/templates/default/compare_hosts.tpl /usr/share/ganglia-webfrontend/templates/default/compare_hosts.tpl
+--- ganglia-3.3.8/web/templates/default/compare_hosts.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/compare_hosts.tpl	2014-10-22 09:39:36.000000000 +0800
+@@ -4,19 +4,19 @@
+   margin: 0 0 10px 10px;
+ }
+ </style>
+-<div id="metric-actions-dialog" title="Metric Actions">
++<div id="metric-actions-dialog" title="指标操作">
+ <div id="metric-actions-dialog-content">
+-	Available Metric actions.
++	合适的指标操作.
+ </div>
+ </div>
+-<div id="inspect-graph-dialog" title="Inspect Graph">
++<div id="inspect-graph-dialog" title="查看图表">
+   <div id="inspect-graph-dialog-content">
+   </div>
+ </div>
+ <div>
+-  Enter host regular expression: 
++  输入主机正则表达式: 
+   <input type="text" name="hreg[]" value="{$hreg_arg}">
+-  <button>Go</button>
++  <button>跳转</button>
+ </div>
+ <div id="compare-hosts-content">
+   <div id=compare-hosts>
+@@ -34,10 +34,10 @@
+       {$graphId = cat($GRAPH_BASE_ID "dg_" $i)}
+       {$showEventsId = cat($SHOW_EVENTS_BASE_ID "dg_" $i)}
+       <div class="img_view"><font style="font-size: 9px">{$metric}</font>
+-        <button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$metric}{$hreg}{$graphargs}&amp;csv=1';return false;">CSV</button>
+-        <button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$metric}{$hreg}{$graphargs}&amp;json=1';return false;">JSON</button>
+-        <button title="Decompose aggregate graph" class="shiny-blue" onClick="javascript:location.href='?mreg[]=%5E{$metric}%24{$hreg}&amp;dg=1';return false;">Decompose</button>
+-        <input title="Hide/Show Events" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">Hide/Show Events</label>
++        <button title="导出CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$metric}{$hreg}{$graphargs}&amp;csv=1';return false;">CSV</button>
++        <button title="导出JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$metric}{$hreg}{$graphargs}&amp;json=1';return false;">JSON</button>
++        <button title="分解汇总图表" class="shiny-blue" onClick="javascript:location.href='?mreg[]=%5E{$metric}%24{$hreg}&amp;dg=1';return false;">分解</button>
++        <input title="隐藏/显示事件" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">隐藏/显示事件</label>
+         <br /><a href="graph_all_periods.php?title={$metric}&mreg[]=%5E{$metric}%24{$hreg}&aggregate=1&hl={$host_list}"><img id="{$graphId}" style="margin-top:5px;" class="noborder {$additional_host_img_css_classes}" src="graph.php?title={$metric}&mreg[]=%5E{$metric}%24${$hreg}{$graphargs}&aggregate=1&hl={$host_list}" /></a>
+       </div>
+       {math "$i + 1" assign=i}
+diff -Nurp ganglia-3.3.8/web/templates/default/decompose_graph.tpl /usr/share/ganglia-webfrontend/templates/default/decompose_graph.tpl
+--- ganglia-3.3.8/web/templates/default/decompose_graph.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/decompose_graph.tpl	2014-10-22 08:59:39.000000000 +0800
+@@ -27,12 +27,12 @@
+     });;
+   });
+ </script>
+-<div id="metric-actions-dialog" title="Metric Actions">
++<div id="metric-actions-dialog" title="指标操作">
+ <div id="metric-actions-dialog-content">
+-	Available Metric actions.
++	合适的指标操作.
+ </div>
+ </div>
+-<div id="popup-dialog" title="Inspect Graph">
++<div id="popup-dialog" title="查看图表">
+   <div id="popup-dialog-content">
+   </div>
+ </div>
+@@ -48,9 +48,9 @@
+     {else}
+       {foreach $items item}
+       <div class="img_view">
+-        <button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;csv=1';return false;">CSV</button>
+-        <button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;json=1';return false;">JSON</button>
+-        <button title="Inspect Graph" onClick="inspectGraph('{$item.url_args}'); return false;" class="shiny-blue">Inspect</button>
++        <button title="导出CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;csv=1';return false;">CSV</button>
++        <button title="导出JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;json=1';return false;">JSON</button>
++        <button title="查看图表" onClick="inspectGraph('{$item.url_args}'); return false;" class="shiny-blue">查看</button>
+         <br /><a href="graph_all_periods.php?{$item.url_args}"><img class="noborder {$additional_host_img_css_classes}" style="margin-top:5px;" src="graph.php?{$item.url_args}" /></a>
+       </div>
+       {/foreach}
+diff -Nurp ganglia-3.3.8/web/templates/default/footer.tpl /usr/share/ganglia-webfrontend/templates/default/footer.tpl
+--- ganglia-3.3.8/web/templates/default/footer.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/footer.tpl	2014-10-23 01:48:07.000000000 +0800
+@@ -3,14 +3,14 @@
+ </div> <!-- tabs-main -->
+ 
+ <div id="tabs-search">
+-  Search term matches any number of metrics and hosts. For example type web or disk; wait a split second, and a drop down menu will show up with choices.
++  搜索匹配任何数量指标和主机的词汇. 比如输入web或者disk; 等待一秒钟, 下拉菜单会显示不同的选项.
+   <!-- Uses LiveSearch from http://andreaslagerkvist.com/jquery/live-search/ -->
+   <div id="metric-search">
+     <form method="post" action="/search/">
+       <p>
+ 	<label>
+-	    <small>Search as you type</small><br />
+-	    <input type="text" name="q" id="search-field-q" size="60" placeholder="Search as you type" on />
++	    <small>搜索输入的内容</small><br />
++	    <input type="text" name="q" id="search-field-q" size="60" placeholder="搜索输入的内容" on />
+ 	</label>
+       </p>
+     </form>
+@@ -22,9 +22,9 @@
+     <form id="create_view_form">
+       <input type="hidden" name="create_view" value="1">
+       <fieldset>
+-	 <label for="name">View Name</label>
++	 <label for="name">视图名称</label>
+ 	 <input type="text" name="view_name" id="view_name" class="text ui-widget-content ui-corner-all" />
+-         <center><button onclick="createView(); return false;">Create</button></center>
++         <center><button onclick="createView(); return false;">创建</button></center>
+       </fieldset>
+     </form>
+   </div>
+@@ -34,27 +34,20 @@
+ <div id="tabs-mobile"></div>
+ 
+ <div id="tabs-autorotation">
+-Invoke automatic rotation system. Automatic rotation rotates all of the graphs/metrics specified in a view waiting 
+-30 seconds in between each. This will run as long as you have this page open.
++调用自动循环系统. 自动循环系统将对在一个视图中指定的所有图表/指标（彼此之间需等待30秒）做循环. 只要打开该页面循环系统就会运行.
+ <p>
+-Please select the view you want to rotate.</p>
++请选择想要循环的视图.</p>
+   <div id="tabs-autorotation-chooser">
+-Loading view, please wait...<img src="img/spinner.gif" />
++正在下载视图, 请稍等...<img src="img/spinner.gif" />
+   </div>
+ </div>
+ 
+ <hr />
+ <div align="center">
+ <font size="-1" class="footer">
+-Ganglia Web Frontend version {$webfrontend_version}
+-<a href="http://ganglia.sourceforge.net/downloads.php?component=ganglia-webfrontend&amp;version={$webfrontend_version}">Check for Updates.</a><br />
+-
+-Ganglia Web Backend <i>({$webbackend_component})</i> version {$webbackend_version}
+-<a href="http://ganglia.sourceforge.net/downloads.php?component={$webbackend_component}&amp;version={$webbackend_version}">Check for Updates.</a><br />
+-
+-Downloading and parsing ganglia's XML tree took {$parsetime}.<br />
+-Images created with <a href="http://www.rrdtool.org/">RRDtool</a> version {$rrdtool_version}.<br />
+-{$dwoo.ad} {$dwoo.version}.<br />
++凝思系统监控软件 版本1.0.9({$webfrontend_version},{$webbackend_version},{$rrdtool_version})<br />
++数据解析时间 {$parsetime}.<br />
++北京凝思科技有限公司<br />
+ </font>
+ </div>
+ </div> <!-- div-tabs -->
+diff -Nurp ganglia-3.3.8/web/templates/default/grid_tree.tpl /usr/share/ganglia-webfrontend/templates/default/grid_tree.tpl
+--- ganglia-3.3.8/web/templates/default/grid_tree.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/grid_tree.tpl	2014-10-21 09:09:27.000000000 +0800
+@@ -1,6 +1,6 @@
+ <table border="0" width="100%">
+ <tr>
+-  <td class="title"><B>{$self} Grid Tree</b></td>
++  <td class="title"><B>{$self} Grid 树结构</b></td>
+ </tr>
+ </table>
+ 
+@@ -40,13 +40,13 @@
+ 
+ <p>
+ <hr />
+-<b>Legend:</b>
++<b>说明:</b>
+ <table cellspacing="5" border="0">
+ <tr>
+-<td class="self" width="20">&nbsp;</td><td>This Grid.</td>
++<td class="self" width="20">&nbsp;</td><td>表示当前网格.</td>
+ </tr>
+ <tr>
+-<td class="grid">&nbsp;</td><td>A Remote Grid.</td>
++<td class="grid">&nbsp;</td><td>表示远程网格.</td>
+ </tr>
+ </table>
+ 
+diff -Nurp ganglia-3.3.8/web/templates/default/header-nobanner.tpl /usr/share/ganglia-webfrontend/templates/default/header-nobanner.tpl
+--- ganglia-3.3.8/web/templates/default/header-nobanner.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/header-nobanner.tpl	2014-10-21 03:19:39.000000000 +0800
+@@ -16,7 +16,7 @@
+      {node_menu}
+      </td>
+      <td>
+-       <input type="submit" value="Get Fresh Data" />
++       <input type="submit" value="获取最新数据" />
+      </td>
+   </tr>
+   </table>
+diff -Nurp ganglia-3.3.8/web/templates/default/header.tpl /usr/share/ganglia-webfrontend/templates/default/header.tpl
+--- ganglia-3.3.8/web/templates/default/header.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/header.tpl	2014-10-23 02:58:50.000000000 +0800
+@@ -2,7 +2,7 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+ <html>
+ <head>
+-<title>Ganglia:: {$page_title}</title>
++<title>凝思系统监控软件:: {$page_title}</title>
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+ <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.min.css" rel="stylesheet" />
+ <link type="text/css" href="css/jquery.liveSearch.css" rel="stylesheet" />
+@@ -178,6 +178,7 @@
+ 
+     function rrdDateTimeString(date) {
+       return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
++//      return date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日 " + date.getHours() + ":" + date.getMinutes();
+     }
+ 
+     function setStartAndEnd(startTime, endTime) {
+@@ -218,16 +219,16 @@
+ 
+ <div id="tabs">
+ <ul>
+-  <li><a href="#tabs-main">Main</a></li>
+-  <li><a href="#tabs-search">Search</a></li>
+-  <li><a href="#tabs-main">Views</a></li>
+-  <li><a href="aggregate_graphs.php">Aggregate Graphs</a></li>
+-  <li><a href="#tabs-main">Compare Hosts</a></li>
++  <li><a href="#tabs-main">主界面</a></li>
++  <li><a href="#tabs-search">搜索</a></li>
++  <li><a href="#tabs-main">视图</a></li>
++  <li><a href="aggregate_graphs.php">汇总图表</a></li>
++  <li><a href="#tabs-main">主机比较特性</a></li>
+ {if $overlay_events}
+-  <li><a href="events.php">Events</a></li>
++  <li><a href="events.php">事件</a></li>
+ {/if}
+-  <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">Automatic Rotation</a></li>
+-  <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">Mobile</a></li>
++  <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">自动循环</a></li>
++  <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">便携终端</a></li>
+ </ul>
+ 
+ <div id="tabs-main">
+@@ -235,10 +236,10 @@
+   <table id="table_top_chooser" width="100%" cellpadding="4" cellspacing="0" border="0">
+   <tr bgcolor="#DDDDDD">
+      <td bgcolor="#DDDDDD">
+-     <big><b id="page_title">{$page_title} for {$date}</b></big>
++     <big><b id="page_title">{$page_title} {$date} </b></big>
+      </td>
+      <td bgcolor="#DDDDDD" align="right">
+-     <input class="submit_button" type="submit" value="Get Fresh Data" />
++     <input class="submit_button" type="submit" value="获取最新数据" />
+      </td>
+   </tr>
+   <tr>
+@@ -252,7 +253,7 @@
+   <tr>
+   <td colspan="2">
+   <div id="sort_menu">
+-   <b>Metric</b>&nbsp;&nbsp; <select name="m" id="metrics-picker">{$picker_metrics}</select>&nbsp;&nbsp;
++   <b>指标</b>&nbsp;&nbsp; <select name="m" id="metrics-picker">{$picker_metrics}</select>&nbsp;&nbsp;
+      {$sort_menu}
+   </div>
+   </td>
+diff -Nurp ganglia-3.3.8/web/templates/default/host_overview.tpl /usr/share/ganglia-webfrontend/templates/default/host_overview.tpl
+--- ganglia-3.3.8/web/templates/default/host_overview.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/host_overview.tpl	2014-10-23 02:23:16.000000000 +0800
+@@ -9,25 +9,77 @@
+ 
+ <table border="0" width="100%">
+ <tr>
+-  <td colspan="2" class="title">Time and String Metrics</td>
++  <td colspan="2" class="title">时间和字符串指标</td>
+ </tr>
+ 
+ {foreach $s_metrics_data s_metric}
+ <tr>
+- <td class="footer" width="30%">{$s_metric.name}</td><td>{$s_metric.value}</td>
++{if $s_metric.name == "Last Boot Time"}
++ <td class="footer" width="30%">启动时间</td><td>{$s_metric.value}</td>
+ </tr>
++{/if}
++{if $s_metric.name == "Gexec Status"}
++ <td class="footer" width="30%">运行代理状态</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Gmond Started"}
++ <td class="footer" width="30%">代理守护进程启动时间</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "IP Address"}
++ <td class="footer" width="30%">主机IP地址</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Last Reported"}
++ <td class="footer" width="30%">最近一次报告</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Location"}
++ <td class="footer" width="30%">主机所在地理坐标</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Machine Type"}
++ <td class="footer" width="30%">主机类型</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Operating System"}
++ <td class="footer" width="30%">操作系统</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Operating System Release"}
++ <td class="footer" width="30%">操作系统发行版本</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
++{if $s_metric.name == "Uptime"}
++ <td class="footer" width="30%">正常运行时间</td><td>{$s_metric.value}</td>
++</tr>
++{/if}
+ {/foreach}
+ 
+ <tr><td>&nbsp;</td></tr>
+ 
+ <tr>
+-  <td colspan="2" class="title">Constant Metrics</td>
++  <td colspan="2" class="title">静态指标</td>
+ </tr>
+ 
+ {foreach $c_metrics_data c_metric}
+ <tr>
+- <td class="footer" width="30%">{$c_metric.name}</td><td>{$c_metric.value}</td>
++{if $c_metric.name == "CPU Count"}
++ <td class="footer" width="30%">处理器计数</td><td>{$c_metric.value}</td>
+ </tr>
++{/if}
++{if $c_metric.name == "CPU Speed"}
++ <td class="footer" width="30%">处理器速度</td><td>{$c_metric.value}</td>
++</tr>
++{/if}
++{if $c_metric.name == "Memory Total"}
++ <td class="footer" width="30%">物理内存总量</td><td>{$c_metric.value}</td>
++</tr>
++{/if}
++{if $c_metric.name == "Swap Space Total"}
++ <td class="footer" width="30%">交换分区总量</td><td>{$c_metric.value}</td>
++</tr>
++{/if}
+ {/foreach}
+ </table>
+ 
+diff -Nurp ganglia-3.3.8/web/templates/default/host_view.tpl /usr/share/ganglia-webfrontend/templates/default/host_view.tpl
+--- ganglia-3.3.8/web/templates/default/host_view.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/host_view.tpl	2014-10-23 05:46:11.000000000 +0800
+@@ -236,19 +236,19 @@ $(function() {
+   #effect h3 { margin: 0; padding: 0.4em; text-align: center; }
+ </style>
+ 
+-<div id="metric-actions-dialog" title="Metric Actions">
++<div id="metric-actions-dialog" title="指标操作">
+   <div id="metric-actions-dialog-content">
+-	Available Metric actions.
++	合适的指标操作.
+   </div>
+ </div>
+-<div id="popup-dialog" title="Inspect Graph">
++<div id="popup-dialog" title="查看图表">
+   <div id="popup-dialog-navigation"></div>
+   <div id="popup-dialog-content">
+   </div>
+ </div>
+ 
+ <div>
+-<button id="host_overview" class="button ui-state-default ui-corner-all">Host Overview</button>
++<button id="host_overview" class="button ui-state-default ui-corner-all">主机概述</button>
+ </div>
+ 
+ <div style="display: none;" id="host_overview_div">
+@@ -282,13 +282,42 @@ $(function() {
+ <table border="0" width="100%">
+ <tr>
+   <td class="title">
+-  {$host} <strong>graphs</strong> ({$host_metrics_count})
+-  last <strong>{$range}</strong>
+-  sorted <strong>{$sort}</strong>
++  {$host} <strong>图表</strong> ({$host_metrics_count})
++{if $range == "hour" }
++   最近 <strong>1小时</strong>
++{/if}
++{if $range == "2hr" }
++   最近 <strong>2小时</strong>
++{/if}
++{if $range == "4hr" }
++   最近 <strong>4小时</strong>
++{/if}
++{if $range == "day" }
++   最近 <strong>1天</strong>
++ {/if}
++ {if $range == "week" }
++   最近 <strong>1周</strong>
++ {/if}
++{if $range == "month" }
++   最近 <strong>1月</strong>
++{/if}
++{if $range == "year" }
++   最近 <strong>1年</strong>
++{/if}
++{if $sort == "ascending" }
++   排序 <strong>升序</strong>
++{/if}
++{if $sort == "descending" }
++   排序 <strong>降序</strong>
++{/if}
++{if $sort == "by name" }
++   排序 <strong>名称</strong>
++{/if}
++
+ {if isset($columns_dropdown)}
+   <font size="-1">
+-    Columns&nbsp;&nbsp;{$metric_cols_menu}
+-    Size&nbsp;&nbsp;{$size_menu}
++    列&nbsp;&nbsp;{$metric_cols_menu}
++    尺寸&nbsp;&nbsp;{$size_menu}
+   </font>
+ {/if}
+   </td>
+@@ -300,8 +329,8 @@ $(function() {
+ <div id=metrics style="padding-top:5px">
+ <center>
+ <div style="padding-bottom:5px;">
+-<button id="expand_all_metric_groups" class="button ui-state-default ui-corner-all">Expand All Metric Groups</button>
+-<button id="collapse_all_metric_groups" class="button ui-state-default ui-corner-all">Collapse All Metric Groups</button>
++<button id="expand_all_metric_groups" class="button ui-state-default ui-corner-all">展开所有指标组</button>
++<button id="collapse_all_metric_groups" class="button ui-state-default ui-corner-all">折叠所有指标组</button>
+ </div>
+ <table>
+ <tr>
+@@ -333,12 +362,12 @@ g_mgMap["{$mgId}"] = "{$group}";
+ <font style="font-size: 9px">{$g_metric.metric_name} {if $g_metric.title != '' && $g_metric.title != $g_metric.metric_name}- {$g_metric.title}{/if}</font>
+ {if $may_edit_views}
+ {$graph_args = "&amp;";$graph_args .= $g_metric.graphargs;}
+-<button class="cupid-green" title="Metric Actions - Add to View, etc" onclick="metricActions('{$g_metric.host_name}','{$g_metric.metric_name}', 'metric', '{$graph_args}'); return false;">+</button>
++<button class="cupid-green" title="指标操作 - 添加至视图等" onclick="metricActions('{$g_metric.host_name}','{$g_metric.metric_name}', 'metric', '{$graph_args}'); return false;">+</button>
+ {/if}
+-<button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;csv=1';return false;">CSV</button>
+-<button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;json=1';return false;">JSON</button>
+-<button title="Inspect Graph" onClick="inspectGraph('{$g_metric.graphargs}'); return false;" class="shiny-blue">Inspect</button>
+-<button title="6 month trend" onClick="drawTrendGraph('./graph.php?{$g_metric.graphargs}&amp;trend=1&amp;z=xlarge'); return false;" class="shiny-blue">Trend</button>
++<button title="导出CSV" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;csv=1';return false;">CSV</button>
++<button title="导出JSON" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;json=1';return false;">JSON</button>
++<button title="查看图表" onClick="inspectGraph('{$g_metric.graphargs}'); return false;" class="shiny-blue">查看</button>
++<button title="未来6个月趋势" onClick="drawTrendGraph('./graph.php?{$g_metric.graphargs}&amp;trend=1&amp;z=xlarge'); return false;" class="shiny-blue">趋势</button>
+ 
+ {if $graph_engine == "flot"}
+ <br>
+@@ -347,7 +376,7 @@ g_mgMap["{$mgId}"] = "{$group}";
+ {else}
+ {$graphId = cat($GRAPH_BASE_ID $mgId $i)}
+ {$showEventsId = cat($SHOW_EVENTS_BASE_ID $mgId $i)}
+-<input title="Hide/Show Events" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">Hide/Show Events</label>
++<input title="隐藏/显示事件" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">隐藏/显示事件</label>
+ <br>
+ <a href="./graph_all_periods.php?{$g_metric.graphargs}&amp;z=large">
+ <img id="{$graphId}" class="noborder {$additional_host_img_css_classes}" style="margin:5px;" alt="{$g_metric.alt}" src="./graph.php?{$g_metric.graphargs}" title="{$g_metric.desc}" />
+diff -Nurp ganglia-3.3.8/web/templates/default/meta_view.tpl /usr/share/ganglia-webfrontend/templates/default/meta_view.tpl
+--- ganglia-3.3.8/web/templates/default/meta_view.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/meta_view.tpl	2014-10-21 09:00:05.000000000 +0800
+@@ -37,9 +37,9 @@
+ {if isset($source.public)}
+ <td align="LEFT" valign="TOP">
+ <table cellspacing="1" cellpadding="1" width="100%" border="0">
+- <tr><td>CPUs Total:</td><td align="left"><B>{$source.cpu_num}</B></td></tr>
+- <tr><td width="80%">Hosts up:</td><td align="left"><B>{$source.num_nodes}</B></td></tr>
+- <tr><td>Hosts down:</td><td align="left"><B>{$source.num_dead_nodes}</B></td></tr>
++ <tr><td>处理器总数:</td><td align="left"><B>{$source.cpu_num}</B></td></tr>
++ <tr><td width="80%">正在运行主机数:</td><td align="left"><B>{$source.num_nodes}</B></td></tr>
++ <tr><td>已关闭主机数:</td><td align="left"><B>{$source.num_dead_nodes}</B></td></tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr><td class="footer" colspan="2">{$source.cluster_load}</td></tr>
+  <tr><td class="footer" colspan="2">{$source.cluster_util}</td></tr>
+@@ -129,8 +129,8 @@
+ {if isset($show_snapshot)}
+ <table border="0" width="100%">
+ <tr>
+-  <td colspan="2" class="title">Snapshot of the {$self} |
+-    <font size="-1"><a href="./cluster_legend.html">Legend</a></font>
++  <td colspan="2" class="title"> {$self} 快照|
++    <font size="-1"><a href="./cluster_legend.html">说明</a></font>
+   </td>
+ </tr>
+ </table>
+diff -Nurp ganglia-3.3.8/web/templates/default/physical_view.tpl /usr/share/ganglia-webfrontend/templates/default/physical_view.tpl
+--- ganglia-3.3.8/web/templates/default/physical_view.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/physical_view.tpl	2014-10-21 08:38:20.000000000 +0800
+@@ -1,25 +1,25 @@
+ <table cellpadding="1" border="0" width="100%">
+ <tr>
+-<td colspan=3 class="title">{$cluster} cluster - Physical View |
+- <font size="-1">Columns&nbsp;&nbsp;{$cols_menu}</font>
++<td colspan=3 class="title">{$cluster} 集群 - 物理视图 |
++ <font size="-1">列&nbsp;&nbsp;{$cols_menu}</font>
+ </td>
+ 
+ <tr>
+ <td align="center" valign="top">
+-   Verbosity level (Lower is more compact):<br />
++   详细级别 (下列数值越低越紧凑):<br />
+    {foreach $verbosity_levels verbosity checked}
+    {$verbosity} <input type="radio" name="p" value="{$verbosity}" OnClick="ganglia_form.submit();" {$checked} />&nbsp;
+    {/foreach}
+ </td>
+ 
+ <td align="left" valign="top" width="25%">
+-Total CPUs: <b>{$CPUs}</b><br />
+-Total Memory: <b>{$Memory}</b><br />
++处理器总数: <b>{$CPUs}</b><br />
++物理内存总量: <b>{$Memory}</b><br />
+ </td>
+ 
+ <td align="left" valign="top" width="25%">
+-Total Disk: <b>{$Disk}</b><br />
+-Most Full Disk: <b>{$most_full}</b><br />
++磁盘总大小: <b>{$Disk}</b><br />
++最完整磁盘: <b>{$most_full}</b><br />
+ </td>
+ 
+ </tr>
+@@ -49,7 +49,7 @@ Most Full Disk: <b>{$most_full}</b><br /
+ <tr>
+  <td align="left">
+ <font size="-1">
+-Legend
++说明
+ </font>
+  </td>
+ </tr>
+@@ -57,20 +57,20 @@ Legend
+ <td class="odd">
+ <table width="100%" cellpadding="1" cellspacing="0" border="0">
+ <tr>
+- <td style="color: blue">Node Name&nbsp;<br /></td>
++ <td style="color: blue">节点名称&nbsp;<br /></td>
+  <td align="right" valign="top">
+   <table cellspacing=1 cellpadding=3 border="0">
+   <tr>
+   <td class="L1" align="right">
+-  <font size="-1">1-min load</font>
++  <font size="-1">1分钟负载</font>
+   </td>
+   </tr>
+  </table>
+ <tr>
+ <td colspan="2" style="color: rgb(70,70,70)">
+ <font size="-1">
+-<em>cpu: </em> CPU clock (GHz) (num CPUs)<br />
+-<em>mem: </em> Total Memory (GB)
++<em>处理器: </em> 处理器时钟 (GHz) (处理器个数)<br />
++<em>内存: </em> 内存总量 (GB)
+ </font>
+ </td>
+ </tr>
+diff -Nurp ganglia-3.3.8/web/templates/default/show_node.tpl /usr/share/ganglia-webfrontend/templates/default/show_node.tpl
+--- ganglia-3.3.8/web/templates/default/show_node.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/show_node.tpl	2014-10-22 03:39:30.000000000 +0800
+@@ -1,7 +1,7 @@
+ <!-- Begin show_node.tpl -->
+ <table border="0" width="100%">
+ <tr>
+-  <td colspan="2" class=title>{$name} Info</td>
++  <td colspan="2" class=title>{$name} 信息</td>
+ </tr>
+ <tr><td colspan="1">&nbsp;</td></tr>
+ <tr>
+@@ -13,46 +13,46 @@
+    <table cellpadding="1" cellspacing="10" border="0">
+    <tr><td valign="top"><font size="+2"><b>{$name}</b></font><br />
+    <i>{$ip}</i><br />
+-   <em>Location:</em> {$location}<p>
++   <em>地理坐标:</em> {$location}<p>
+ 
+-   Cluster local time {$clustertime}<br />
+-   Last heartbeat received {$age} ago.<br />
+-   Uptime {$uptime}<br />
++   集群本地时间 {$clustertime}<br />
++   最近一次收到心跳 {$age} ago.<br />
++   正常运行时间 {$uptime}<br />
+ 
+    </td>
+    <td align="right" valign="top">
+    <table cellspacing="4" cellpadding="3" border="0"><tr>
+-   <tr><td><i>Load:</i></td>
++   <tr><td><i>负载:</i></td>
+    <td class={$load1}><small>{$load_one}</small></td>
+    <td class={$load5}><small>{$load_five}</small></td>
+    <td class={$load15}><small>{$load_fifteen}</small></td>
+-   </tr><tr><td></td><td><em>1m</em></td><td><em>5m</em></td><td><em>15m</em></td></tr>
++   </tr><tr><td></td><td><em>1分钟</em></td><td><em>5分钟</em></td><td><em>15分钟</em></td></tr>
+    </table><br />
+ 
+    <table cellspacing="4" cellpadding="3" border="0"><tr>
+-   <td><i>CPU Utilization:</i></td>
++   <td><i>处理器利用率:</i></td>
+    <td class={$user}><small>{$cpu_user}</small></td>
+    <td class={$sys}><small>{$cpu_system}</small></td>
+    <td class={$idle}><small>{$cpu_idle}</small></td>
+-   </tr><tr><td></td><td><em>user</em></td><td><em>sys</em></td><td><em>idle</em></td></tr>
++   </tr><tr><td></td><td><em>用户</em></td><td><em>系统</em></td><td><em>空闲</em></td></tr>
+    </table>
+    </td>
+    </tr>
+    <tr><td align="left" valign="top">
+ 
+-   <b>Hardware</b><br />
+-   <em>CPU{$s}:</em> {$cpu}<br />
+-   <em>Memory (RAM):</em> {$mem}<br />
+-   <em>Local Disk:</em> {$disk}<br />
+-   <em>Most Full Disk Partition:</em> {$part_max_used}
++   <b>硬件</b><br />
++   <em>处理器{$s}:</em> {$cpu}<br />
++   <em>内存 (RAM):</em> {$mem}<br />
++   <em>本地磁盘:</em> {$disk}<br />
++   <em>最完整的磁盘分区:</em> {$part_max_used}
+    </td>
+    <td align="left" valign="top">
+ 
+-   <b>Software</b><br />
+-   <em>OS:</em> {$OS}<br />
+-   <em>Booted:</em> {$booted}<br />
+-   <em>Uptime:</em> {$uptime}<br />
+-   <em>Swap:</em> {$swap}<br />
++   <b>软件</b><br />
++   <em>操作系统:</em> {$OS}<br />
++   <em>启动时间:</em> {$booted}<br />
++   <em>正常运行时间:</em> {$uptime}<br />
++   <em>交换分区:</em> {$swap}<br />
+ 
+    </td></tr></table>
+ </td>
+@@ -62,7 +62,7 @@
+ </tr>
+ <tr>
+ <td align="center" valign="middle">
+- <a href="{$physical_view}">Physical View</a> | <a href="{$self}">Reload</a>
++ <a href="{$physical_view}">物理视图</a> | <a href="{$self}">重新加载</a>
+ </td>
+ </tr>
+ <tr>
+diff -Nurp ganglia-3.3.8/web/templates/default/views_view.tpl /usr/share/ganglia-webfrontend/templates/default/views_view.tpl
+--- ganglia-3.3.8/web/templates/default/views_view.tpl	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/templates/default/views_view.tpl	2014-10-22 08:46:59.000000000 +0800
+@@ -27,7 +27,7 @@
+   });
+ </script>
+ 
+-<div id="popup-dialog" title="Inspect Graph">
++<div id="popup-dialog" title="查看图表">
+   <div id="popup-dialog-content">
+   </div>
+ </div>
+@@ -35,7 +35,7 @@
+ <table id="views_table">
+ <tr><td valign="top">
+ <div id="views_menu">
+-  <p>Existing views:</p>
++  <p>已存在视图:</p>
+   <ul id="navlist">
+     {$existing_views}
+   </ul>
+@@ -50,7 +50,7 @@
+     <div class="ui-widget">
+       <div class="ui-state-default ui-corner-all" style="padding: 0 .7em;"> 
+         <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+-          No graphs defined for this view. Please add some
++          没有为此视图定义图表.请添加 
+       </div>
+     </div>
+     {else}
+@@ -59,13 +59,13 @@
+       {$graphId = cat($GRAPH_BASE_ID "view_" $i)}
+       {$showEventsId = cat($SHOW_EVENTS_BASE_ID "view_" $i)}
+       <div class="img_view">
+-        <button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;csv=1';return false;">CSV</button>
+-        <button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;json=1';return false;">JSON</button>
++        <button title="导出CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;csv=1';return false;">CSV</button>
++        <button title="导出JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;json=1';return false;">JSON</button>
+         {if $view_item.aggregate_graph == 1}
+         <button title="Decompose aggregate graph" class="shiny-blue" onClick="javascript:location.href='?{$view_item.url_args}&amp;dg=1&amp;tab=v';return false;">Decompose</button>
+         {/if}
+-        <button title="Inspect Graph" onClick="inspectGraph('{$view_item.url_args}'); return false;" class="shiny-blue">Inspect</button>
+-        <input title="Hide/Show Events" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">Hide/Show Events</label>
++        <button title="查看图表" onClick="inspectGraph('{$view_item.url_args}'); return false;" class="shiny-blue">查看</button>
++        <input title="隐藏/显示事件" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">隐藏/显示事件</label>
+         <br />
+ {if $graph_engine == "flot"}
+ <div id="placeholder_{$view_item.url_args}" class="flotgraph2 img_view"></div>
+diff -Nurp ganglia-3.3.8/web/trend_navigation.php /usr/share/ganglia-webfrontend/trend_navigation.php
+--- ganglia-3.3.8/web/trend_navigation.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/trend_navigation.php	2014-10-22 08:27:56.000000000 +0800
+@@ -21,7 +21,7 @@ $query_string = preg_replace("/(&trendhi
+ <center>
+ <div id="trend_range_menu">
+ <form id="trend_range_form">
+-Use data from last 
++使用的数据来自最近 
+ <?php
+ foreach ( $months_back as $index => $month ) {
+   if (  $_REQUEST['trendhistory'] == $month )
+@@ -34,7 +34,7 @@ foreach ( $months_back as $index => $mon
+ <?php
+ }
+ ?>
+-months&nbsp;|&nbsp;Extend trend line 
++月&nbsp;|&nbsp;延长趋势线至未来
+ <?php
+ 
+ if ( !isset($_REQUEST['trendrange']) )
+@@ -53,10 +53,10 @@ foreach ( $months_ahead as $index => $mo
+ <?php
+ }
+ ?>
+- months ahead</form></div>
++月</form></div>
+ </center>
+ <script type="text/javascript">
+   $(function () {
+     $("#trend_range_menu").buttonset();
+   });
+-</script>
+\ No newline at end of file
++</script>
+diff -Nurp ganglia-3.3.8/web/views.php /usr/share/ganglia-webfrontend/views.php
+--- ganglia-3.3.8/web/views.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/views.php	2014-10-22 02:45:24.000000000 +0800
+@@ -44,7 +44,7 @@ $base = isset($_GET['base']) ? $_GET['ba
+ 	  print "<a href=\"" . $base . "/graph_all_periods.php?" . htmlentities($element['graph_args']) ."&amp;z=large\"><img title=\"" . $legend . " - " . $element['name'] . "\" border=0 src=\"" . $base . "/graph.php?" . htmlentities($element['graph_args']) . "&amp;z=small" . $range_args .  "\" style=\"padding:2px;\"></a>";
+ 	}
+       } else {
+-	print "No graphs defined for this view. Please add some";
++	print " 没有为此视图定义图表.请添加";
+       }
+     }
+   } 
+diff -Nurp ganglia-3.3.8/web/views_view.php /usr/share/ganglia-webfrontend/views_view.php
+--- ganglia-3.3.8/web/views_view.php	2014-08-12 07:58:22.000000000 +0800
++++ /usr/share/ganglia-webfrontend/views_view.php	2014-10-22 09:20:32.000000000 +0800
+@@ -4,14 +4,14 @@ include_once("./functions.php");
+ include_once("./global.php");
+ 
+ if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::VIEW, $conf))
+-  die("You do not have access to view views.");
++  die("您没有权限查看视图.");
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+ // Create new view
+ ///////////////////////////////////////////////////////////////////////////////
+ if (isset($_GET['create_view'])) {
+   if(! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
+-    $output = "You do not have access to edit views.";
++    $output = "您没有权限编辑视图.";
+   } else {
+     // Check whether the view name already exists
+     $view_exists = 0;
+@@ -27,7 +27,7 @@ if (isset($_GET['create_view'])) {
+     if ($view_exists == 1) {
+       $output = "<strong>Alert:</strong> View with the name " .
+                 $_GET['view_name'] . 
+-                " already exists.";
++                " 已存在.";
+     } else {
+       $empty_view = array ("view_name" => $_GET['view_name'],
+                            "items" => array());
+@@ -36,11 +36,11 @@ if (isset($_GET['create_view'])) {
+       $json = json_encode($empty_view);
+       if (file_put_contents($view_filename, 
+                             json_prettyprint($json)) === FALSE) {
+-        $output = "<strong>Alert:</strong>" .
+-                  " Can't write to file $view_filename." .
+-                  " Perhaps permissions are wrong.";
++        $output = "<strong>警报:</strong>" .
++                  " 不能写入文件 $view_filename." .
++                  " 也许权限是错误的.";
+       } else {
+-        $output = "View has been created successfully.";
++        $output = "视图已成功创建.";
+       }
+     }
+   }
+@@ -60,7 +60,7 @@ if (isset($_GET['create_view'])) {
+ ///////////////////////////////////////////////////////////////////////////////
+ if (isset($_GET['delete_view'])) {
+   if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
+-    $output = "You do not have access to edit views.";
++    $output = "您没有权限编辑视图.";
+   } else {
+     // Check whether the view name already exists
+     $view_exists = 0;
+@@ -76,16 +76,16 @@ if (isset($_GET['delete_view'])) {
+     if ($view_exists != 1) {
+       $output = "<strong>Alert:</strong> View with the name " .
+       $_GET['view_name'] . 
+-      " does not exist.";
++      " 不存在.";
+     } else {
+       $view_suffix = str_replace(" ", "_", $_GET['view_name']);
+       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
+       if (unlink($view_filename) === FALSE) {
+-        $output = "<strong>Alert:</strong>" .
+-                  " Can't remove file $view_filename." .
+-                  " Perhaps permissions are wrong.";
++        $output = "<strong>警报:</strong>" .
++                  " 无法删除文件 $view_filename." .
++                  " 也许权限是错误的.";
+       } else {
+-        $output = "View has been successfully removed.";
++        $output = "视图已成功删除.";
+       }
+     }
+   }
+@@ -96,7 +96,7 @@ if (isset($_GET['delete_view'])) {
+ ///////////////////////////////////////////////////////////////////////////////
+ if (isset($_GET['add_to_view'])) {
+   if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
+-    $output = "You do not have access to edit views.";
++    $output = "您没有权限编辑视图.";
+   } else {
+     $view_exists = 0;
+     // Check whether the view name already exists
+@@ -110,9 +110,9 @@ if (isset($_GET['add_to_view'])) {
+     }
+ 
+     if ($view_exists == 0) {
+-      $output = "<strong>Alert:</strong> View " .
++      $output = "<strong>警报:</strong> View " .
+       $_GET['view_name'] . 
+-      " does not exist. This should not happen.";
++      " 不存在.这是不应该发生的.";
+     } else {
+       // Read in contents of an existing view
+       $view_filename = $view['file_name'];
+@@ -173,11 +173,11 @@ if (isset($_GET['add_to_view'])) {
+ 
+       if (file_put_contents($view_filename, 
+                             json_prettyprint($json)) === FALSE ) {
+-        $output = "<strong>Alert:</strong>" .
+-                  " Can't write to file $view_filename." .
+-                  " Perhaps permissions are wrong.";
++        $output = "<strong>警报:</strong>" .
++                  " 不能写入文件 $view_filename." .
++                  " 也许权限是错误的.";
+       } else {
+-        $output = "View has been updated successfully.";
++        $output = "视图已成功更新.";
+       } 
+     }  
+   }
+@@ -227,7 +227,7 @@ if (sizeof($available_views) == -1) {
+       <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
+         <p><span class="ui-icon ui-icon-alert" 
+                  style="float: left; margin-right: .3em;"></span> 
+-	   <strong>Alert:</strong> There are no views defined.</p>
++	   <strong>警报:</strong> 没有定义的视图.</p>
+       </div>
+     </div>';
+ }

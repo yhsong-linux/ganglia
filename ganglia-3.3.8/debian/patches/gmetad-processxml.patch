@@ -1,0 +1,11 @@
+--- ganglia-3.3.8/gmetad/process_xml.c	2012-08-13 20:55:09.000000000 +0800
++++ ganglia-3.3.8.new/gmetad/process_xml.c	2015-02-10 13:22:31.000000000 +0800
+@@ -1174,7 +1174,7 @@ end (void *data, const char *el)
+       {
+          case GRID_TAG:
+             rc = endElement_GRID(data, el);
+-	    break;
++	     /*  No break. */ 
+ 
+          case CLUSTER_TAG:
+             rc = endElement_CLUSTER(data, el);
