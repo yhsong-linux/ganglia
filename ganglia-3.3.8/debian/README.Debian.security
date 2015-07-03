@@ -1,0 +1,12 @@
+The Debian security team has decided that security support for ganglia
+will be limited only to installations behind a trusted HTTP zone.  Thus,
+any problems affecting this package in non-trusted zones will be treated
+as a non-issue (updated packages and security announcements will not be
+provided).
+
+This software was written under the expectation that it be used in a
+local cluster environment, and thus the security consequences of
+exposing various interfaces to the wider untrusted internet were not
+fully considered, and are consequently not handled well. The security
+team does not have the time or resources to compensate for these
+upstream limitations. 
