@@ -11,11 +11,21 @@ if [ ! -d /var/lib/ganglia/rrds ]; then
 fi
 if [ -d /var/lib/ganglia/rrds ]; then
   chown ganglia:ganglia /var/lib/ganglia
-  chown -R nobody /var/lib/ganglia/rrds
+# chown -R nobody /var/lib/ganglia/rrds
+  chown -R sysadmin /var/lib/ganglia/rrds
   chmod 0755 /var/lib/ganglia
   chmod -R o-w /var/lib/ganglia/rrds
 fi
- 
+
+#Create serial file
+if [ -d /etc/linxsn ]; then
+    touch /etc/linxsn/gmetad_sn.conf
+    echo "linx_serial=" > /etc/linxsn/gmetad_sn.conf
+else 
+    mkdir /etc/linxsn
+    touch /etc/linxsn/gmetad_sn.conf
+    echo "linx_serial=" > /etc/linxsn/gmetad_sn.conf
+fi
 #DEBHELPER#
 
 exit 0

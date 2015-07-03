@@ -35,7 +35,7 @@ config.status: configure
 		--prefix=/usr --mandir=\$${prefix}/share/man \
 		--libdir=\$${prefix}/lib \
 		--sysconfdir=/etc/ganglia \
-		--infodir=\$${prefix}/share/info --enable-shared \
+		--infodir=\$${prefix}/share/info --enable-shared --enable-setuid=sysadmin \
 		--with-gmetad
 build: build-stamp
 	make -C web
@@ -62,7 +62,8 @@ clean:
 		ganglia-config contrib/ganglia_gmond.xml gmetad/gmetad.conf \
 		gmond/gmond.solaris.init gmond/modules/conf.d/modpython.conf solaris/pkginfo \
 		web/conf.php
-	-rm -rf debian/patches/ .pc/
+#	-rm -rf debian/patches/ .pc/
+	-rm -rf .pc/
 	debconf-updatepo
 	dh_autotools-dev_restoreconfig
 	dh_clean
@@ -131,7 +132,7 @@ binary-arch: build install
 	cp $(CURDIR)/debian/gmond.conf $(CURDIR)/debian/ganglia-monitor/etc/ganglia
 	dh_installexamples
 	dh_installmenu -s
-	dh_installinit -s
+	dh_installinit --no-start -s
 	dh_installcron -s
 	dh_installman -pganglia-monitor
 	dh_installman -plibganglia1-dev

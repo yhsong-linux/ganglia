@@ -37,4 +37,13 @@ if [ "$1" = "configure" ]; then
 
 fi
 
+if [ -f /etc/ganglia-webfrontend/apache.conf ]; then
+	cp /etc/ganglia-webfrontend/apache.conf /etc/apache2/sites-enabled/ganglia.conf
+fi
+
+if [ -d /var/lib/ganglia/dwoo/compiled ] && [ -d /var/lib/ganglia/dwoo/cache ]; then
+	chmod 0777 /var/lib/ganglia/dwoo/compiled
+	chmod 0777 /var/lib/ganglia/dwoo/cache
+fi
+
 #DEBHELPER#

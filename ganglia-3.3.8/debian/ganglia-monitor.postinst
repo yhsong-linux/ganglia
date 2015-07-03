@@ -15,6 +15,16 @@ if [ -f /etc/gmond.conf ]; then
   fi
   rm /etc/gmond.conf
 fi
+
+#Create serial file
+if [ -d /etc/linxsn ]; then
+    touch /etc/linxsn/gmond_sn.conf
+    echo "linx_serial=" > /etc/linxsn/gmond_sn.conf
+else 
+    mkdir /etc/linxsn
+    touch /etc/linxsn/gmond_sn.conf
+    echo "linx_serial=" > /etc/linxsn/gmond_sn.conf
+fi
 #DEBHELPER#
 
 exit 0

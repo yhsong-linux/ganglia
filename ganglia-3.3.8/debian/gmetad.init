@@ -11,6 +11,8 @@ DAEMON=/usr/sbin/gmetad
 NAME=gmetad
 DESC="Ganglia Monitor Meta-Daemon"
 
+. /lib/lsb/init-functions
+
 test -x $DAEMON || exit 0
 
 set -e
@@ -24,8 +26,7 @@ case "$1" in
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-        start-stop-daemon --stop  --quiet --oknodo \
-                --exec $DAEMON  2>&1 > /dev/null 
+	killproc -p /var/run/$NAME.pid $NAME -TERM
 	echo "$NAME."
 	;;
   reload)
