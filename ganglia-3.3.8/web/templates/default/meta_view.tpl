@@ -37,9 +37,9 @@
 {if isset($source.public)}
 <td align="LEFT" valign="TOP">
 <table cellspacing="1" cellpadding="1" width="100%" border="0">
- <tr><td>CPUs Total:</td><td align="left"><B>{$source.cpu_num}</B></td></tr>
- <tr><td width="80%">Hosts up:</td><td align="left"><B>{$source.num_nodes}</B></td></tr>
- <tr><td>Hosts down:</td><td align="left"><B>{$source.num_dead_nodes}</B></td></tr>
+ <tr><td>处理器总数:</td><td align="left"><B>{$source.cpu_num}</B></td></tr>
+ <tr><td width="80%">正在运行主机数:</td><td align="left"><B>{$source.num_nodes}</B></td></tr>
+ <tr><td>已关闭主机数:</td><td align="left"><B>{$source.num_dead_nodes}</B></td></tr>
  <tr><td>&nbsp;</td></tr>
  <tr><td class="footer" colspan="2">{$source.cluster_load}</td></tr>
  <tr><td class="footer" colspan="2">{$source.cluster_util}</td></tr>
@@ -129,8 +129,8 @@
 {if isset($show_snapshot)}
 <table border="0" width="100%">
 <tr>
-  <td colspan="2" class="title">Snapshot of the {$self} |
-    <font size="-1"><a href="./cluster_legend.html">Legend</a></font>
+  <td colspan="2" class="title"> {$self} 快照|
+    <font size="-1"><a href="./cluster_legend.html">说明</a></font>
   </td>
 </tr>
 </table>

@@ -9,13 +9,13 @@ include_once $conf['gweb_root'] . "/functions.php";
 include_once $conf['gweb_root'] . "/lib/common_api.php";
 
 if ( !isset($_GET['action']) ) {
-  api_return_error( "Error: You need to specify an action at a minimum" );
+  api_return_error( "错误: 您需要至少指定一个操作" );
 }
 
 $events_array = ganglia_events_get();
 
 if( ! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::VIEW, $conf) ) {
-  api_return_error("You do not have access to view views.");
+  api_return_error("您没有权限查看视图.");
 }
 
 switch ( $_GET['action'] ) {
@@ -29,7 +29,7 @@ switch ( $_GET['action'] ) {
       }
     }
     if (!$found_view) {
-      api_return_error("That view does not exist.");
+      api_return_error("这个视图不存在.");
     }
     $view_suffix = str_replace(" ", "_", $_GET['view_name']);
     $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
@@ -48,7 +48,7 @@ switch ( $_GET['action'] ) {
 
   case 'create_view': 
   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
-    api_return_error("You do not have access to edit views.");
+    api_return_error("您没有权限编辑视图.");
   } else {
     // Check whether the view name already exists
     $view_exists = 0;
@@ -62,7 +62,7 @@ switch ( $_GET['action'] ) {
     }
 
     if ( $view_exists == 1 ) {
-      api_return_error("View with the name ".$_GET['view_name']." already exists.");
+      api_return_error("视图 ".$_GET['view_name']." 已存在.");
     } else {
       $empty_view = array ( "view_name" => $_GET['view_name'],
         "items" => array() );
@@ -70,9 +70,9 @@ switch ( $_GET['action'] ) {
       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
       $json = json_encode($empty_view);
       if ( file_put_contents($view_filename, json_prettyprint($json)) === FALSE ) {
-        api_return_error("Can't write to file $view_filename. Perhaps permissions are wrong.");
+        api_return_error("不能写入文件 $view_filename. 也许权限是错误的.");
       } else {
-        api_return_ok("View has been created successfully.");
+        api_return_ok("视图已成功创建.");
       } // end of if ( file_put_contents($view_filename, $json) === FALSE ) 
     }  // end of if ( $view_exists == 1 )
   }
@@ -83,7 +83,7 @@ switch ( $_GET['action'] ) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
   case 'delete_view':
   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
-    api_return_error("You do not have access to edit views.");
+    api_return_error("您没有权限编辑视图.");
   } else {
     // Check whether the view name already exists
     $view_exists = 0;
@@ -97,14 +97,14 @@ switch ( $_GET['action'] ) {
     }
 
     if ( $view_exists != 1 ) {
-      api_return_error("View with the name ".$_GET['view_name']." does not exist.");
+      api_return_error("视图 ".$_GET['view_name']." 不存在.");
     } else {
       $view_suffix = str_replace(" ", "_", $_GET['view_name']);
       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
       if ( unlink($view_filename) === FALSE ) {
-        api_return_error("Can't remove file $view_filename. Perhaps permissions are wrong.");
+        api_return_error("不能删除文件 $view_filename. 也许权限是错误的.");
       } else {
-        api_return_ok("View has been successfully removed.");
+        api_return_ok("视图已成功删除.");
       }
     }
   }
@@ -115,7 +115,7 @@ switch ( $_GET['action'] ) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
   case 'add_to_view':
   if( ! checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
-    api_return_error("You do not have access to edit views.");
+    api_return_error("您没有权限编辑视图.");
   } else {
     $view_exists = 0;
     // Check whether the view name already exists
@@ -129,7 +129,7 @@ switch ( $_GET['action'] ) {
     }
 
     if ( $view_exists == 0 ) {
-      api_return_error("View ".$_GET['view_name']." does not exist. This should not happen.");
+      api_return_error("视图 ".$_GET['view_name']." 不存在. 这是不应该发生的.");
     } else {
 
       // Read in contents of an existing view
@@ -176,9 +176,9 @@ switch ( $_GET['action'] ) {
       $json = json_encode($view);
 
       if ( file_put_contents($view_filename, json_prettyprint($json)) === FALSE ) {
-        api_return_error("Can't write to file $view_filename. Perhaps permissions are wrong.");
+        api_return_error("不能写入文件 $view_filename. 也许权限是错误的.");
       } else {
-        api_return_ok("View has been updated successfully.");
+        api_return_ok("视图已成功更新.");
       } // end of if ( file_put_contents($view_filename, $json) === FALSE ) 
     }  // end of if ( $view_exists == 1 )
   }

@@ -21,7 +21,7 @@ $query_string = preg_replace("/(&trendhistory=)(\d+)/", "", $query_string);
 <center>
 <div id="trend_range_menu">
 <form id="trend_range_form">
-Use data from last 
+使用的数据来自最近 
 <?php
 foreach ( $months_back as $index => $month ) {
   if (  $_REQUEST['trendhistory'] == $month )
@@ -34,7 +34,7 @@ foreach ( $months_back as $index => $month ) {
 <?php
 }
 ?>
-months&nbsp;|&nbsp;Extend trend line 
+月&nbsp;|&nbsp;延长趋势线至未来
 <?php
 
 if ( !isset($_REQUEST['trendrange']) )
@@ -53,7 +53,7 @@ foreach ( $months_ahead as $index => $month ) {
 <?php
 }
 ?>
- months ahead</form></div>
+月</form></div>
 </center>
 <script type="text/javascript">
   $(function () {

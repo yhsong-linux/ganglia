@@ -11,11 +11,14 @@
 #include <cmdline.h>
 
 #include <apr_time.h>
+#include <liblinxsn.h>
 
 #include "daemon_init.h"
 #include "update_pidfile.h"
 
 #include "rrd_helpers.h"
+
+#define LINX_GMETAD_SN_CKPATH "/etc/linxsn/gmetad_sn.conf"
 
 #define METADATA_SLEEP_RANDOMIZE 5.0
 #define METADATA_MINIMUM_SLEEP 1
@@ -283,6 +286,17 @@ main ( int argc, char *argv[] )
       {
          err_quit("%s doesn't have any data sources specified", args_info.conf_arg);
       }
+
+   /* linx serial number check */
+   sn_info tsn_info;
+ 
+   memset(&tsn_info, 0, sizeof(tsn_info));
+   memcpy(tsn_info.product, "cgroup", sizeof("cgroup"));
+ 
+   if( 0 != check_linxsn(&tsn_info,LINX_GMETAD_SN_CKPATH,1)){
+	   printf("gmetad linxsn check error!\n");
+  	exit(-1);
+  }
 
    memset(&root, 0, sizeof(root));
    root.id = ROOT_NODE;

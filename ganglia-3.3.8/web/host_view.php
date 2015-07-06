@@ -54,11 +54,11 @@ foreach ( $reports["included_reports"] as $index => $report_name ) {
   if ( ! in_array( $report_name, $reports["excluded_reports"] ) ) {
     $graph_anchor = "<a href=\"./graph_all_periods.php?$graph_args&amp;g=" . $report_name . "&amp;z=large&amp;c=$cluster_url\">";
 
-    $addMetricBtn = "<button class=\"cupid-green\" title=\"Metric Actions - Add to View, etc\" onclick=\"metricActions('{$hostname}','{$report_name}','graph','');  return false;\">+</button>";
+    $addMetricBtn = "<button class=\"cupid-green\" title=\"指标操作 - 添加至视图等\" onclick=\"metricActions('{$hostname}','{$report_name}','graph','');  return false;\">+</button>";
 
-    $csvBtn = "<button title=\"Export to CSV\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;csv=1';return false;\">CSV</button>";
+    $csvBtn = "<button title=\"导出CSV\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;csv=1';return false;\">CSV</button>";
 
-    $jsonBtn = "<button title=\"Export to JSON\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;json=1';return false;\">JSON</button>";
+    $jsonBtn = "<button title=\"导出JSON\" class=\"cupid-green\" onClick=\"javascript:location.href='./graph.php?$graph_args&amp;g={$report_name}&amp;z=large&amp;c=$cluster_url&amp;json=1';return false;\">JSON</button>";
 
     if ( $conf['graph_engine'] == "flot" ) {
       $optional_reports .= $graph_anchor . "</a>";
@@ -71,8 +71,8 @@ foreach ( $reports["included_reports"] as $index => $report_name ) {
     } else {
       $optional_reports .= "<div class='img_view'>";
       $graphId = $GRAPH_BASE_ID . $report_name;
-      $inspectBtn = "<button title=\"Inspect Graph\" onClick=\"inspectGraph('{$graph_args}&amp;g={$report_name}&amp;z=large&amp;c={$cluster_url}'); return false;\" class=\"shiny-blue\">Inspect</button>";
-      $showEventBtn = '<input title="Hide/Show Events" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $report_name . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $report_name . '">Hide/Show Events</label>';
+      $inspectBtn = "<button title=\"查看图表\" onClick=\"inspectGraph('{$graph_args}&amp;g={$report_name}&amp;z=large&amp;c={$cluster_url}'); return false;\" class=\"shiny-blue\">查看</button>";
+      $showEventBtn = '<input title="隐藏/显示事件" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $report_name . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $report_name . '">隐藏/显示事件</label>';
       if(checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf))
         $optional_reports .= $addMetricBtn . '&nbsp;';
       $optional_reports .= $csvBtn . '&nbsp;' . $jsonBtn . '&nbsp;' .$inspectBtn . '&nbsp;' . $showEventBtn . "<br />" . $graph_anchor . "<img id=\"" . $graphId . "\" $additional_cluster_img_html_args border=\"0\" title=\"$cluster_url\" SRC=\"./graph.php?$graph_args&amp;g=" . $report_name ."&amp;z=medium&amp;c=$cluster_url\" style=\"margin-top:5px;\" /></a></div>";

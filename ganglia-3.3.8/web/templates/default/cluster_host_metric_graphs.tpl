@@ -15,7 +15,7 @@
 
 {if isset($node_legend)}
 <p>
-(Nodes colored by 1-minute load) | <a href="./node_legend.html">Legend</A>
+(1分钟负载节点颜色) | <a href="./node_legend.html">说明</A>
 </p>
 {/if}
 </center>

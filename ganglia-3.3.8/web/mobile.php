@@ -13,8 +13,9 @@ retrieve_metrics_cache();
 <!DOCTYPE html> 
 <html> 
 <head> 
-<title>Ganglia Mobile</title> 
+<title>凝思系统监控软件便携终端视图</title> 
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="css/jquery.mobile-1.0.min.css" />
 <script src="js/jquery-1.7.1.min.js"></script>
 <script src="js/jquery.mobile-1.0.min.js"></script>
@@ -42,22 +43,22 @@ dt code, dd code { font-size:1.3em; line-height:150%; }
 ?>
 <div data-role="page" class="ganglia-mobile" id="mobile-home">
   <div data-role="header">
-    <h1>Ganglia Mobile</h1>
+    <h1>凝思系统监控软件便携终端视图</h1>
   </div>
   <div data-role="content">
-    Please select a category:<p>
+    请选择一个类别:<p>
     <ul data-role="listview" data-theme="g">
-      <li><a href="#views">Views</a><span class="ui-li-count"><?php print sizeof($available_views); ?></span></li>
+      <li><a href="#views">视图</a><span class="ui-li-count"><?php print sizeof($available_views); ?></span></li>
       <?php
 	if ( sizeof($cluster_names) == 1) {
            print '<li><a href="#cluster-' . str_replace(" ", "_", $clustername) . '">Clusters</a><span class="ui-li-count">1</span></li>';
         } else {
       ?>
-      <li><a href="#clusters">Clusters</a><span class="ui-li-count"><?php print sizeof($cluster_names); ?></span></li>
+      <li><a href="#clusters">集群</a><span class="ui-li-count"><?php print sizeof($cluster_names); ?></span></li>
       <?php
       }
       ?>
-      <li><a href="#search">Search</a></li>
+      <li><a href="#search">搜索</a></li>
     </ul>
   </div><!-- /content -->
 </div><!-- /page -->
@@ -66,7 +67,7 @@ if ( sizeof($cluster_names) > 1 ) {
 ?>
  <div data-role="page" class="ganglia-mobile" id="clusters">
   <div data-role="header">
-	  <h1>Ganglia Clusters</h1>
+	  <h1>凝思系统监控软件集群</h1>
   </div>
   <div data-role="content">	
     <ul data-role="listview" data-theme="g">
@@ -89,12 +90,12 @@ foreach ( $cluster_names as $index => $clustername ) {
 ?>
   <div data-role="page" class="ganglia-mobile" id="cluster-<?php print str_replace(" ", "_", $clustername); ?>">
     <div data-role="header">
-	    <h1>Cluster <?php print $clustername; ?></h1>
+	    <h1>集群 <?php print $clustername; ?></h1>
     </div>
     <div data-role="content">	
       <ul data-role="listview" data-filter="true" data-theme="g">
 	<?php
-	  print '<li><a href="mobile_helper.php?show_cluster_metrics=1&c=' . $clustername . '&r=' . $conf['default_time_range'] . '&cs=&ce=">Cluster Summary</a></li>';  
+	  print '<li><a href="mobile_helper.php?show_cluster_metrics=1&c=' . $clustername . '&r=' . $conf['default_time_range'] . '&cs=&ce=">集群概述</a></li>';  
 	// List all hosts in the cluster
 	asort($cluster_array[$clustername]);
 	foreach ( $cluster_array[$clustername] as $index => $hostname ) {
@@ -112,7 +113,7 @@ foreach ( $cluster_names as $index => $clustername ) {
 ?>
 <div data-role="page" class="ganglia-mobile" id="views">
   <div data-role="header">
-	  <h1>Ganglia Views</h1>
+	  <h1>凝思系统监控软件视图</h1>
   </div>
   <div data-role="content">
     <ul data-role="listview" data-filter="true" data-theme="g">
@@ -139,12 +140,12 @@ $(function(){
 </script>
 <div data-role="page" class="ganglia-mobile" id="search">
   <div data-role="header">
-	  <h1>Search</h1>
+	  <h1>搜索</h1>
   </div>
   <div data-role="content">
     <p>
       <label>
-	Search for host or a metric: <br />
+	搜索主机或者一个指标: <br />
 	<input type="text" name="q" id="search-field-q" on size=40 />
       </label>
     </p>

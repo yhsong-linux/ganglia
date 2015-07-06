@@ -82,7 +82,7 @@ $data->assign("images","./templates/${conf['template_name']}/images");
 
 $data->assign( "date", date("r"));
 
-# The page to go to when "Get Fresh Data" is pressed.
+# The page to go to when "获取最新数据" is pressed.
 if (isset($page))
       $data->assign("page",$page);
 else
@@ -135,16 +135,16 @@ $data->assign("cluster_url", $cluster_url);
 $alt_view = "";
 
 if ($context == "cluster") {
-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url';return false;\">Physical View</button>";
+   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url';return false;\">物理视图</button>";
 } elseif ($context == "physical") {
-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url';return false;\">Full View</button>";
+   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url';return false;\">集群视图</button>";
 } elseif ($context=="node") {
-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url&amp;h=$node_url&amp;$get_metric_string';return false;\">Host View</button>";
+   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?c=$cluster_url&amp;h=$node_url&amp;$get_metric_string';return false;\">主机视图</button>";
 } elseif ($context=="host") {
-   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url&amp;h=$node_url';return false;\">Node View</button>";
+   $alt_view = "<button class=\"header_btn\" onclick=\"window.location='./?p=2&amp;c=$cluster_url&amp;h=$node_url';return false;\">节点视图</button>";
 } elseif ( $context == "views") {
    if(  checkAccess( GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf ) ) {
-       $alt_view = '<button onclick="return false" id="create_view_button">Create View</button>';
+       $alt_view = '<button onclick="return false" id="create_view_button">创建视图</button>';
    }
 }
 
@@ -180,11 +180,11 @@ if (($context != 'views') && ($context != 'compare_hosts')) {
     $node_menu .= hiddenvar("c", $clustername);
   } else if ($context == "decompose_graph") {
     $node_menu .= '<input type="hidden" name="dg" value="1">';
-    $node_menu .= "Decompose Graph";
+    $node_menu .= "分解图表";
   }  else {
     # No cluster has been specified, so drop in a list
     $node_menu .= "<select name=\"c\" OnChange=\"ganglia_form.submit();\">\n";
-    $node_menu .= "<option value=\"\">--Choose a Source\n";
+    $node_menu .= "<option value=\"\">--选择一个源\n";
     ksort($grid);
     foreach ($grid as $k => $v) {
       if ($k == $self) continue;
@@ -205,10 +205,10 @@ if (($context != 'views') && ($context != 'compare_hosts')) {
   if ($clustername && !$hostname) {
     # Drop in a host list if we have hosts
     if (!$showhosts) {
-      $node_menu .= "[Summary Only]";
+      $node_menu .= "[仅显示概述]";
     } elseif (is_array($hosts_up) || is_array($hosts_down)) {
       $node_menu .= "<select name=\"h\" OnChange=\"ganglia_form.submit();\">";
-      $node_menu .= "<option value=\"\">--Choose a Node</option>";
+      $node_menu .= "<option value=\"\">--选择一个节点</option>";
       if (is_array($hosts_up)) {
         uksort($hosts_up, "strnatcmp");
         foreach ($hosts_up as $k=> $v) {
@@ -261,14 +261,30 @@ if (!$physical) {
    if ($cs or $ce)
       $context_ranges[]="custom";
 
-   $range_menu = "<B>Last</B>&nbsp;&nbsp;";
+   $range_menu = "<B>最近</B>&nbsp;&nbsp;";
    foreach ($context_ranges as $v) {
       $url=rawurlencode($v);
       if ($v == $range)
 $checked = "checked=\"checked\"";
       else
 $checked = "";
-      $range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
+#			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
+			if ($v == "hour")
+							$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1小时</label>";
+	 else if ($v == "2hr")
+	  	$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">2小时</label>";
+	 else if ($v == "4hr")
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">4小时</label>";
+	 else	if ($v == "day")
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1天</label>";
+	 else	if ($v == "week")
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1周</label>";
+	 else	if ($v == "month")
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1月</label>";
+	 else	if ($v == "year")
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">1年</label>";
+	else
+			$range_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"range-$v\" name=\"r\" value=\"$v\" $checked/><label for=\"range-$v\">$v</label>";
 
    }
 
@@ -328,14 +344,19 @@ if ($context == "meta" or $context == "cluster") {
     $context_sorts[]="by hosts down";
   }
 
-  $sort_menu = "<B>Sorted</B>&nbsp;&nbsp;";
+  $sort_menu = "<B>排序</B>&nbsp;&nbsp;";
   foreach ($context_sorts as $v) {
     $url=rawurlencode($v);
     if ($v == $sort)
       $checked = "checked=\"checked\"";
     else
-      $checked = "";
-    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">$v</label>";
+						$checked = "";
+		if($v == "ascending")
+    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">升序</label>";
+		if($v == "descending")
+    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">降序</label>";
+		if($v == "by name")
+    $sort_menu .= "<input OnChange=\"ganglia_submit();\" type=\"radio\" id=\"radio-" .str_replace(" ", "_", $v) . "\" name=\"s\" value=\"$v\" $checked/><label for=\"radio-" . str_replace(" ", "_", $v) . "\">名称</label>";
   }
  }
 $data->assign("sort_menu", $sort_menu );
@@ -389,14 +410,14 @@ $custom_time = "";
 if ( in_array($context , array ("meta", "cluster", "host", "views", "decompose_graph", "compare_hosts") ) ) {
    $examples = "Feb 27 2007 00:00, 2/27/2007, 27.2.2007, now -1 week,"
       . " -2 days, start + 1 hour, etc.";
-   $custom_time = "&nbsp;&nbsp;or <span class=\"nobr\">from <input type=\"TEXT\" title=\"$examples\" NAME=\"cs\" ID=\"datepicker-cs\" SIZE=\"17\"";
+   $custom_time = "&nbsp;&nbsp;或者 <span class=\"nobr\">从 <input type=\"TEXT\" title=\"$examples\" NAME=\"cs\" ID=\"datepicker-cs\" SIZE=\"17\"";
    if ($cs)
       $custom_time .= " value=\"$cs\"";
-   $custom_time .= "> to <input type=\"TEXT\" title=\"$examples\" name=\"ce\" ID=\"datepicker-ce\" SIZE=\"17\"";
+   $custom_time .= "> 至 <input type=\"TEXT\" title=\"$examples\" name=\"ce\" ID=\"datepicker-ce\" SIZE=\"17\"";
    if ($ce)
       $custom_time .= " value=\"$ce\"";
-   $custom_time .= "> <input type=\"submit\" value=\"Go\">\n";
-   $custom_time .= "<input type=\"button\" value=\"Clear\" onclick=\"ganglia_submit(1)\"></span>\n";
+   $custom_time .= "> <input type=\"submit\" value=\"跳转\">\n";
+   $custom_time .= "<input type=\"button\" value=\"清除\" onclick=\"ganglia_submit(1)\"></span>\n";
 #      $custom_time .= $calendar;
    $data->assign("custom_time", $custom_time);
 
@@ -429,7 +450,7 @@ if ( $context == "cluster" ) {
   else
     $max_graphs = $conf['max_graphs'];
   
-  $max_graphs_values = "<option value=0>all</option>";
+  $max_graphs_values = "<option value=0>所有</option>";
   foreach ( $max_graphs_options as $key => $value ) {
       if ( $max_graphs == $value )
 $max_graphs_values .= "<option selected>" . $value . "</option>";
@@ -438,9 +459,9 @@ $max_graphs_values .= "<option>" . $value . "</option>";
 
   }
 
-  $data->assign("additional_filter_options", 'Show only nodes matching <input name=host_regex ' .$set_host_regex_value . '>'
-   . '<input class=submit_button type="SUBMIT" VALUE="Filter">'
-   . '&nbsp;<span class="nobr">Max graphs to show <select onChange="ganglia_submit();" name="max_graphs">' . $max_graphs_values . '</select></span>'
+  $data->assign("additional_filter_options", '仅显示匹配的节点 <input name=host_regex ' .$set_host_regex_value . '>'
+   . '<input class=submit_button type="SUBMIT" VALUE="筛选">'
+   . '&nbsp;<span class="nobr">最多显示图形 <select onChange="ganglia_submit();" name="max_graphs">' . $max_graphs_values . '</select></span>'
     );
 } else
   $data->assign("additional_filter_options", '');
@@ -463,7 +484,7 @@ $data->assign('view_name', $user['viewname']);
 
 $additional_buttons = "";
 if ($context == 'views' || $context == 'decompose_graph' || $context == 'host') {
-  $additional_buttons = '<input title="Hide/Show Events" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label for="show_all_events">Hide/Show Events</label>';
+  $additional_buttons = '<input title="显示/隐藏事件" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label for="show_all_events">显示/隐藏事件</label>';
 }
 $data->assign('additional_buttons', $additional_buttons);
 

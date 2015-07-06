@@ -236,19 +236,19 @@ $(function() {
   #effect h3 { margin: 0; padding: 0.4em; text-align: center; }
 </style>
 
-<div id="metric-actions-dialog" title="Metric Actions">
+<div id="metric-actions-dialog" title="指标操作">
   <div id="metric-actions-dialog-content">
-	Available Metric actions.
+	合适的指标操作.
   </div>
 </div>
-<div id="popup-dialog" title="Inspect Graph">
+<div id="popup-dialog" title="查看图表">
   <div id="popup-dialog-navigation"></div>
   <div id="popup-dialog-content">
   </div>
 </div>
 
 <div>
-<button id="host_overview" class="button ui-state-default ui-corner-all">Host Overview</button>
+<button id="host_overview" class="button ui-state-default ui-corner-all">主机概述</button>
 </div>
 
 <div style="display: none;" id="host_overview_div">
@@ -282,13 +282,42 @@ $(function() {
 <table border="0" width="100%">
 <tr>
   <td class="title">
-  {$host} <strong>graphs</strong> ({$host_metrics_count})
-  last <strong>{$range}</strong>
-  sorted <strong>{$sort}</strong>
+  {$host} <strong>图表</strong> ({$host_metrics_count})
+{if $range == "hour" }
+   最近 <strong>1小时</strong>
+{/if}
+{if $range == "2hr" }
+   最近 <strong>2小时</strong>
+{/if}
+{if $range == "4hr" }
+   最近 <strong>4小时</strong>
+{/if}
+{if $range == "day" }
+   最近 <strong>1天</strong>
+ {/if}
+ {if $range == "week" }
+   最近 <strong>1周</strong>
+ {/if}
+{if $range == "month" }
+   最近 <strong>1月</strong>
+{/if}
+{if $range == "year" }
+   最近 <strong>1年</strong>
+{/if}
+{if $sort == "ascending" }
+   排序 <strong>升序</strong>
+{/if}
+{if $sort == "descending" }
+   排序 <strong>降序</strong>
+{/if}
+{if $sort == "by name" }
+   排序 <strong>名称</strong>
+{/if}
+
 {if isset($columns_dropdown)}
   <font size="-1">
-    Columns&nbsp;&nbsp;{$metric_cols_menu}
-    Size&nbsp;&nbsp;{$size_menu}
+    列&nbsp;&nbsp;{$metric_cols_menu}
+    尺寸&nbsp;&nbsp;{$size_menu}
   </font>
 {/if}
   </td>
@@ -300,8 +329,8 @@ $(function() {
 <div id=metrics style="padding-top:5px">
 <center>
 <div style="padding-bottom:5px;">
-<button id="expand_all_metric_groups" class="button ui-state-default ui-corner-all">Expand All Metric Groups</button>
-<button id="collapse_all_metric_groups" class="button ui-state-default ui-corner-all">Collapse All Metric Groups</button>
+<button id="expand_all_metric_groups" class="button ui-state-default ui-corner-all">展开所有指标组</button>
+<button id="collapse_all_metric_groups" class="button ui-state-default ui-corner-all">折叠所有指标组</button>
 </div>
 <table>
 <tr>
@@ -333,12 +362,12 @@ g_mgMap["{$mgId}"] = "{$group}";
 <font style="font-size: 9px">{$g_metric.metric_name} {if $g_metric.title != '' && $g_metric.title != $g_metric.metric_name}- {$g_metric.title}{/if}</font>
 {if $may_edit_views}
 {$graph_args = "&amp;";$graph_args .= $g_metric.graphargs;}
-<button class="cupid-green" title="Metric Actions - Add to View, etc" onclick="metricActions('{$g_metric.host_name}','{$g_metric.metric_name}', 'metric', '{$graph_args}'); return false;">+</button>
+<button class="cupid-green" title="指标操作 - 添加至视图等" onclick="metricActions('{$g_metric.host_name}','{$g_metric.metric_name}', 'metric', '{$graph_args}'); return false;">+</button>
 {/if}
-<button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;csv=1';return false;">CSV</button>
-<button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;json=1';return false;">JSON</button>
-<button title="Inspect Graph" onClick="inspectGraph('{$g_metric.graphargs}'); return false;" class="shiny-blue">Inspect</button>
-<button title="6 month trend" onClick="drawTrendGraph('./graph.php?{$g_metric.graphargs}&amp;trend=1&amp;z=xlarge'); return false;" class="shiny-blue">Trend</button>
+<button title="导出CSV" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;csv=1';return false;">CSV</button>
+<button title="导出JSON" class="cupid-green" onClick="javascript:location.href='./graph.php?{$g_metric.graphargs}&amp;json=1';return false;">JSON</button>
+<button title="查看图表" onClick="inspectGraph('{$g_metric.graphargs}'); return false;" class="shiny-blue">查看</button>
+<button title="未来6个月趋势" onClick="drawTrendGraph('./graph.php?{$g_metric.graphargs}&amp;trend=1&amp;z=xlarge'); return false;" class="shiny-blue">趋势</button>
 
 {if $graph_engine == "flot"}
 <br>
@@ -347,7 +376,7 @@ g_mgMap["{$mgId}"] = "{$group}";
 {else}
 {$graphId = cat($GRAPH_BASE_ID $mgId $i)}
 {$showEventsId = cat($SHOW_EVENTS_BASE_ID $mgId $i)}
-<input title="Hide/Show Events" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">Hide/Show Events</label>
+<input title="隐藏/显示事件" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">隐藏/显示事件</label>
 <br>
 <a href="./graph_all_periods.php?{$g_metric.graphargs}&amp;z=large">
 <img id="{$graphId}" class="noborder {$additional_host_img_css_classes}" style="margin:5px;" alt="{$g_metric.alt}" src="./graph.php?{$g_metric.graphargs}" title="{$g_metric.desc}" />

@@ -81,7 +81,7 @@ else if (isset($_GET['c']) && ($_GET['c'] != ''))
 else if (is_array($_GET['hreg']))
   $description = join(",", $_GET['hreg']);
 else
-  $description = "Unknown";
+  $description = "未知";
 
 if (isset($_GET['g'])) 
   $metric_description = $_GET['g'];
@@ -90,7 +90,7 @@ else if ( isset($_GET['m'] ))
 else if (is_array($_GET['mreg']) )
   $metric_description = join(",", $_GET['mreg']);
 else
-  $metric_description = "Unknown";
+  $metric_description = "未知";
 
 
 if ( $conf['graph_engine'] == "flot" ) {
@@ -125,16 +125,16 @@ if ( ! isset($_GET['embed'] ) ) {
 <?php
 if ( ! isset($_REQUEST['mobile']) ) {
 ?>
-<div id="popup-dialog" style="display: none" title="Inspect Graph">
+<div id="popup-dialog" style="display: none" title="查看图表">
   <div id="popup-dialog-content">
   </div>
 </div>
 <?php
 }
 ?>
-<div id="metric-actions-dialog" style="display: none" title="Metric Actions">
+<div id="metric-actions-dialog" style="display: none" title="指标操作">
 <div id="metric-actions-dialog-content">
-	Available Metric actions.
+	合适的指标操作.
 </div>
 </div>
 <form>
@@ -143,9 +143,9 @@ if ( isset($_REQUEST['mobile'])) {
 ?>
     <div data-role="page" class="ganglia-mobile" id="view-home">
     <div data-role="header">
-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
+      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
       <h3><?php if (isset($_GET['g'])) echo $_GET['g']; else echo $_GET['m']; ?></h3>
-      <a href="#mobile-home">Home</a>
+      <a href="#mobile-home">主页</a>
     </div>
     <div data-role="content">
 <?php
@@ -154,13 +154,13 @@ if ( isset($_REQUEST['mobile'])) {
 // Skip printing if this is an embedded graph e.g. from Aggregate graph screen
 if ( ! isset($_REQUEST['embed'] )  ) {
 ?>
-  <b>Host/Cluster/Host Regex: </b><?php print $description ?>&nbsp;<b>Metric/Graph/Metric Regex: </b><?php print $metric_description;?>&nbsp;&nbsp;
+  <b>主机/集群/主机正则表达式: </b><?php print $description ?>&nbsp;<b>指标/图表/指标正则表达式: </b><?php print $metric_description;?>&nbsp;&nbsp;
 <?php }
 
 if ( ! isset($_REQUEST['mobile'] )  ) {
 
 ?>
-<input title="Hide/Show Events" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label class="show_event_text" for="show_all_events">Hide/Show Events All Graphs</label><br />
+<input title="隐藏/显示事件" type="checkbox" id="show_all_events" onclick="showAllEvents(this.checked)"/><label class="show_event_text" for="show_all_events">隐藏/显示事件的所有图表</label><br />
 <?php
 } // end of if ( ! isset($_REQUEST['mobile'] )  ) {
 
@@ -185,23 +185,23 @@ foreach ( $conf['time_ranges'] as $key => $value ) {
   
     // Check if it's an aggregate graph
     if ( $is_aggregate  ) {
-      print '<button class="cupid-green" title="Metric Actions - Add to View, etc" onclick="metricActionsAggregateGraph(\'' . $query_string . '\'); return false;">+</button>';
+      print '<button class="cupid-green" title="指标操作 - 添加至视图等" onclick="metricActionsAggregateGraph(\'' . $query_string . '\'); return false;">+</button>';
     }
   
-    print ' <button title="Export to CSV" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;csv=1\';return false">CSV</button> ';
+    print ' <button title="导出CSV" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;csv=1\';return false">CSV</button> ';
   
-    print ' <button title="Export to JSON" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;json=1\';return false;">JSON</button> ';
+    print ' <button title="导出JSON" class="cupid-green" onclick="window.location=\'./graph.php?r=' . $key . $query_string . '&amp;json=1\';return false;">JSON</button> ';
   
      // Check if it's an aggregate graph
     if ( $is_aggregate  ) {
-	print ' <button title="Decompose aggregate graph" class="shiny-blue" onClick="openDecompose(\'?r=' . $key . $query_string  . '&amp;dg=1\');return false;">Decompose</button>';
+	print ' <button title="分解汇总图表" class="shiny-blue" onClick="openDecompose(\'?r=' . $key . $query_string  . '&amp;dg=1\');return false;">分解</button>';
     }
    
-    print ' <button title="Inspect Graph" onClick="inspectGraph(\'r=' . $key . $query_string  . '\'); return false;" class="shiny-blue">Inspect</button>';
+    print ' <button title="查看图表" onClick="inspectGraph(\'r=' . $key . $query_string  . '\'); return false;" class="shiny-blue">查看</button>';
 
     $graphId = $GRAPH_BASE_ID . $key;
 
-    print ' <input title="Hide/Show Events" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $key . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $key . '">Hide/Show Events</label>';
+    print ' <input title="隐藏/显示事件" type="checkbox" id="' . $SHOW_EVENTS_BASE_ID . $key . '" onclick="showEvents(\'' . $graphId . '\', this.checked)"/><label class="show_event_text" for="' . $SHOW_EVENTS_BASE_ID . $key . '">隐藏/显示事件</label>';
 
   } 
 

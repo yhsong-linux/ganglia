@@ -40,9 +40,9 @@ if ( isset($_GET['q']) && $_GET['q'] != "" ) {
 	$cluster_name = $index_array['cluster'][$host_name];
 
         if ( $mobile )
-	  $results .= 'Metric: <a onclick="jQuery(\'#jquery-live-search\').slideUp(0)" href="mobile_helper.php?show_host_metrics=1&h=' . $host_name . '&c=' . $cluster_name . '&r=' . $conf['default_time_range'] . '&cs=&ce=">' . $host_name . " (" . $metric_name .  ")</a><br>";
+	  $results .= '指标: <a onclick="jQuery(\'#jquery-live-search\').slideUp(0)" href="mobile_helper.php?show_host_metrics=1&h=' . $host_name . '&c=' . $cluster_name . '&r=' . $conf['default_time_range'] . '&cs=&ce=">' . $host_name . " (" . $metric_name .  ")</a><br>";
 	else
-	  $results .= "Metric: <a target=\"_blank\" href=\"?c=" . $cluster_name . "&h=" . $host_name . "&m=cpu_report&r=hour&s=descending&hc=4&mc=2#metric_" . $metric_name  . "\">" . $host_name . " @ " . $cluster_name .  " (" . $metric_name .  ")</a><br>";
+	  $results .= "指标: <a target=\"_blank\" href=\"?c=" . $cluster_name . "&h=" . $host_name . "&m=cpu_report&r=hour&s=descending&hc=4&mc=2#metric_" . $metric_name  . "\">" . $host_name . " @ " . $cluster_name .  " (" . $metric_name .  ")</a><br>";
       }
     }
   }
@@ -52,7 +52,7 @@ if ( isset($_GET['q']) && $_GET['q'] != "" ) {
 }
 
 if ( $results == "" ) {
-  print "No results. Try a different search term. One term only.";
+  print "无此结果. 请尝试不同的搜索词. 只能是一个词.";
 } else {
   
   if ( $mobile ) {

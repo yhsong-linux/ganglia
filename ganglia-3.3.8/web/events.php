@@ -45,23 +45,23 @@ function eventActions(action) {
   });
 }
 </script>
-<div align=center><button onClick='$("#add-event-dialog").dialog("open");' class="minimal-indent">Add an Event</button></div>
-<div id=add-event-dialog title="Add Event">
-You can specify either start date or end date or both.<p>
+<div align=center><button onClick='$("#add-event-dialog").dialog("open");' class="minimal-indent">添加一个事件</button></div>
+<div id=add-event-dialog title="添加事件">
+您可以指定开始日期和结束日期或两者兼而有之.<p>
 <table width=90%>
 <form id="event-actions-form">
-<tr><td>Event Summary:</td><td><input type="text" name="summary" id="event_summary" size=20></td></tr>
-<tr><td>Host Regex:</td><td><input type="text" name="host_regex" id="host_regex" size=20></td></tr>
-<tr><td>Start Date:</td><td><input type="text" title="Start Date" name="start_date" id="event-start-date" size=20></td></tr>
-<tr><td>End Date:</td><td><input type="text" title="End Date" name="end_date" id="event-end-date" size=20></td></tr>
+<tr><td>事件概述:</td><td><input type="text" name="summary" id="event_summary" size=20></td></tr>
+<tr><td>主机正则表达式:</td><td><input type="text" name="host_regex" id="host_regex" size=20></td></tr>
+<tr><td>开始日期:</td><td><input type="text" title="Start Date" name="start_date" id="event-start-date" size=20></td></tr>
+<tr><td>结束日期:</td><td><input type="text" title="End Date" name="end_date" id="event-end-date" size=20></td></tr>
 <tr><td>
-<button onclick="eventActions('add');" id="add-event-button">Add</button>
+<button onclick="eventActions('add');" id="add-event-button">添加</button>
 </td><td colspan=2><div id="event-message"></div></td></tr>
 </form>
 </table>
 </div>
 <p>
-Following is a list of known overlay events<p>
+下面是一组已知覆盖事件列表<p>
 
 
 <?php 
@@ -69,13 +69,13 @@ Following is a list of known overlay events<p>
 ?>
 <table id="overlay_event_table" width=90%>
 <tr>
-<th>Start Time</th>
-<th>End Time</th>
-<th>Summary</th>
-<th>Description</th>
-<th>Grid</th>
-<th>Cluster</th>
-<th>Host Regex</th>
+<th>开始时间</th>
+<th>结束时间</th>
+<th>概述</th>
+<th>描述</th>
+<th>网格</th>
+<th>集群</th>
+<th>主机正则表达式</th>
 </tr>
 <?php
 

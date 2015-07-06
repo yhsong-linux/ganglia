@@ -741,7 +741,7 @@ if ( $user['json_output'] ||
   if ( $user['json_output'] ) {
 
     header("Content-type: application/json");
-    header("Content-Disposition: inline; filename=\"ganglia-metrics.json\"");
+    header("Content-Disposition: inline; filename=\"lxmt-metrics.json\"");
     print json_encode($output_array);
 
   }
@@ -769,7 +769,7 @@ if ( $user['json_output'] ||
 
   if ( $user['csv_output'] ) {
     header("Content-Type: application/csv");
-    header("Content-Disposition: inline; filename=\"ganglia-metrics.csv\"");
+    header("Content-Disposition: inline; filename=\"lxmt-metrics.csv\"");
 
     print "Timestamp";
 

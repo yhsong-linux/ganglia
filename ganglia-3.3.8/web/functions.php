@@ -1180,9 +1180,9 @@ function getHostOverViewData($hostname,
   $data->assign("node_image", node_image($metrics));
 
   if ($hosts_up)
-    $data->assign("node_msg", "This host is up and running."); 
+    $data->assign("node_msg", "这台主机已启动并正在运行."); 
   else
-    $data->assign("node_msg", "This host is down."); 
+    $data->assign("node_msg", "这台主机已关闭."); 
 
   # No reason to go on if this node is down.
   if ($hosts_down)

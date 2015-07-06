@@ -16,7 +16,7 @@
      {node_menu}
      </td>
      <td>
-       <input type="submit" value="Get Fresh Data" />
+       <input type="submit" value="获取最新数据" />
      </td>
   </tr>
   </table>

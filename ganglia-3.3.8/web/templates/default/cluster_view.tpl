@@ -112,9 +112,9 @@ $(function() {
   } 
 </style>
 
-<div id="metric-actions-dialog" title="Metric Actions">
+<div id="metric-actions-dialog" title="指标操作">
   <div id="metric-actions-dialog-content">
-    Available Metric actions.
+    合适的指标操作.
   </div>
 </div>
 
@@ -137,7 +137,7 @@ $(function() {
 <table border="0" cellspacing=4 width="100%">
 <tr>
   <td class="title" colspan="2">
-  <font size="+1" id="cluster_title">Overview of {$cluster} @ {$localtime}</font>
+  <font size="+1" id="cluster_title">概述 {$cluster} @ {$localtime}</font>
   </td>
 </tr>
 
@@ -170,7 +170,7 @@ $(function() {
   <img id="load_pie" src="./pie.php?{$pie_args}" border="0" />
 {/if}
 {if $heatmap && $num_nodes > 0}
-Utilization heatmap<br />
+利用率热视图<br />
 <div id="heatmap-fig">
 <script type="text/javascript+protovis">
 var heatmap = [
@@ -209,7 +209,7 @@ vis.render();
 <table width="100%" border=0>
 <tr>
   <td class=title colspan="1">
-  <font size="+1">Stacked Graph - {$metric}</font> 
+  <font size="+1">叠加图 - {$metric}</font> 
   </td>
 </tr>
 <tr>
@@ -231,19 +231,47 @@ $("#metrics-picker").val("{$metric_name}");
 <table border="0" width="100%">
   <tr>
   <td class="title" style="font-size: 12px">
-  Show Hosts Scaled:
+  主机显示缩放:
   {foreach $showhosts_levels id showhosts implode=""}
   <input type="radio" name="sh" value="{$id}" id="shch{$id}" OnClick="ganglia_form.submit();" {$showhosts.checked}><label for="shch{$id}">{$showhosts.name}</label>
   {/foreach}&nbsp;
   |
   <span class="nobr">{$cluster} <strong>{$metric}</strong>
-  last <strong>{$range}</strong>
-  sorted <strong>{$sort}</strong></span>
+{if $range == "hour" }
+  最近 <strong>1小时</strong>
+{/if}
+{if $range == "2hr" }
+  最近 <strong>2小时</strong>
+{/if}
+{if $range == "4hr" }
+  最近 <strong>4小时</strong>
+{/if}
+{if $range == "day" }
+  最近 <strong>1天</strong>
+{/if}
+{if $range == "week" }
+  最近 <strong>1周</strong>
+{/if}
+{if $range == "month" }
+  最近 <strong>1月</strong>
+{/if}
+{if $range == "year" }
+  最近 <strong>1年</strong>
+{/if}
+{if $sort == "ascending" }
+  排序 <strong>升序</strong></span>
+{/if}
+{if $sort == "descending" }
+  排序 <strong>降序</strong></span>
+{/if}
+{if $sort == "by name" }
+  排序 <strong>名称</strong></span>
+{/if}
 {if isset($columns_size_dropdown)}
   |
    <font size="-1">
-   <span class="nobr">Size&nbsp;&nbsp;{$size_menu}</span>
-   <span class="nobr">Columns&nbsp;&nbsp;{$cols_menu} (0 = metric + reports)</span>
+ 	 <span class="nobr">尺寸&nbsp;&nbsp;{$size_menu}</span>
+   <span class="nobr">列&nbsp;&nbsp;{$cols_menu} (0 = 指标 + 报告)</span>
    </font>
 {/if}
   </td>

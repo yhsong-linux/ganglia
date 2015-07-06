@@ -16,7 +16,7 @@
 
 <div id="placeholder" style="width:800px;height:500px;"></div>
 
-<p id="choices">Show:</p>
+<p id="choices">显示:</p>
 <?php
 
 $base_url = str_replace("inspect_graph.php", "", $_SERVER["SCRIPT_NAME"]);

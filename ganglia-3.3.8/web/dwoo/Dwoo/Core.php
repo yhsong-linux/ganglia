@@ -436,7 +436,7 @@ class Dwoo_Core
         $this->globals = array
         (
             'version'   =>  self::VERSION,
-            'ad'        =>  '<a href="http://dwoo.org/">Powered by Dwoo</a>',
+            'ad'        =>  '<a href="http://dwoo.org/">搭载Dwoo</a>',
             'now'       =>  $_SERVER['REQUEST_TIME'],
             'charset'   =>  $this->charset,
         );

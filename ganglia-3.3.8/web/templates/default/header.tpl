@@ -2,7 +2,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Ganglia:: {$page_title}</title>
+<title>凝思系统监控软件:: {$page_title}</title>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 <link type="text/css" href="css/smoothness/jquery-ui-1.8.14.custom.min.css" rel="stylesheet" />
 <link type="text/css" href="css/jquery.liveSearch.css" rel="stylesheet" />
@@ -178,6 +178,7 @@
 
     function rrdDateTimeString(date) {
       return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+//      return date.getFullYear() + "年" + (date.getMonth() + 1) + "月" + date.getDate() + "日 " + date.getHours() + ":" + date.getMinutes();
     }
 
     function setStartAndEnd(startTime, endTime) {
@@ -218,16 +219,16 @@
 
 <div id="tabs">
 <ul>
-  <li><a href="#tabs-main">Main</a></li>
-  <li><a href="#tabs-search">Search</a></li>
-  <li><a href="#tabs-main">Views</a></li>
-  <li><a href="aggregate_graphs.php">Aggregate Graphs</a></li>
-  <li><a href="#tabs-main">Compare Hosts</a></li>
+  <li><a href="#tabs-main">主界面</a></li>
+  <li><a href="#tabs-search">搜索</a></li>
+  <li><a href="#tabs-main">视图</a></li>
+  <li><a href="aggregate_graphs.php">汇总图表</a></li>
+  <li><a href="#tabs-main">主机比较特性</a></li>
 {if $overlay_events}
-  <li><a href="events.php">Events</a></li>
+  <li><a href="events.php">事件</a></li>
 {/if}
-  <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">Automatic Rotation</a></li>
-  <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">Mobile</a></li>
+  <li><a href="#tabs-autorotation" onclick="autoRotationChooser();">自动循环</a></li>
+  <li><a href="#tabs-mobile" onclick="window.location.href='mobile.php';">便携终端</a></li>
 </ul>
 
 <div id="tabs-main">
@@ -235,10 +236,10 @@
   <table id="table_top_chooser" width="100%" cellpadding="4" cellspacing="0" border="0">
   <tr bgcolor="#DDDDDD">
      <td bgcolor="#DDDDDD">
-     <big><b id="page_title">{$page_title} for {$date}</b></big>
+     <big><b id="page_title">{$page_title} {$date} </b></big>
      </td>
      <td bgcolor="#DDDDDD" align="right">
-     <input class="submit_button" type="submit" value="Get Fresh Data" />
+     <input class="submit_button" type="submit" value="获取最新数据" />
      </td>
   </tr>
   <tr>
@@ -252,7 +253,7 @@
   <tr>
   <td colspan="2">
   <div id="sort_menu">
-   <b>Metric</b>&nbsp;&nbsp; <select name="m" id="metrics-picker">{$picker_metrics}</select>&nbsp;&nbsp;
+   <b>指标</b>&nbsp;&nbsp; <select name="m" id="metrics-picker">{$picker_metrics}</select>&nbsp;&nbsp;
      {$sort_menu}
   </div>
   </td>

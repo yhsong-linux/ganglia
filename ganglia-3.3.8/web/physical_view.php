@@ -151,8 +151,8 @@ function nodebox($hostname, $verbose, $title="", $extrarow="")
    $cpus = $cpu_num > 1 ? "($cpu_num)" : "";
    if ($up)
       $hardware = 
-         sprintf("<em>cpu: </em>%.2f<small>G</small> %s ", $cpu_speed, $cpus) .
-         sprintf("<em>mem: </em>%.2f<small>G</small>",$mem_total_gb);
+         sprintf("<em>处理器: </em>%.2f<small>G</small> %s ", $cpu_speed, $cpus) .
+         sprintf("<em>内存: </em>%.2f<small>G</small>",$mem_total_gb);
    else $hardware = "&nbsp;";
 
    $row2 = "<tr><td colspan=2>";
@@ -163,7 +163,7 @@ function nodebox($hostname, $verbose, $title="", $extrarow="")
       $last_heartbeat = $hostattrs[$hostname]['TN'];
       $age = $last_heartbeat > 3600 ? uptime($last_heartbeat) : 
          "${last_heartbeat}s";
-      $row2 .= "<font size=\"-2\">Last heartbeat $age</font>";
+      $row2 .= "<font size=\"-2\">最近一次心跳 $age</font>";
       $row3 = $hardware;
    }
 

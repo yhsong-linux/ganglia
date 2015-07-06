@@ -13,9 +13,9 @@ if ( isset($_GET['view_name'])) {
 ?>  
   <div data-role="page" class="ganglia-mobile" id="view-home">
     <div data-role="header">
-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
-      <h1>View <?php print $_GET['view_name']; ?></h1>
-      <a href="#mobile-home">Home</a>
+      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
+      <h1>视图 <?php print $_GET['view_name']; ?></h1>
+      <a href="#mobile-home">主页</a>
       <div data-role="navbar">
 	<ul>
   <?php
@@ -72,7 +72,7 @@ if ( isset($_GET['view_name'])) {
 	  <IMG ALT=\"" . $element['hostname'] . " - " . $element['name'] . "\" BORDER=0 SRC=\"./graph.php?" . $element['graph_args'] . "&z=mobile" . $range_args .  "\"></A>";
 	}
       } else {
-	print "No graphs defined for this view. Please add some";
+	print " 没有为此视图定义图表.请添加";
       }
 	
 	
@@ -92,9 +92,9 @@ if ( isset($_GET['show_cluster_metrics'])) {
 ?>  
   <div data-role="page" class="ganglia-mobile" id="viewhost-<?php print $hostname; ?>">
     <div data-role="header" data-position="fixed">
-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
-      <h3>Cluster <?php print $clustername; ?></h3>
-      <a href="#mobile-home">Home</a>
+      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
+      <h3>集群 <?php print $clustername; ?></h3>
+      <a href="#mobile-home">主页</a>
         <div data-role="navbar">
 	<ul>
   <?php
@@ -175,9 +175,9 @@ if ( isset($_GET['show_host_metrics'])) {
 ?>
   <div data-role="page" class="ganglia-mobile" id="viewhost-<?php print $hostname; ?>">
     <div data-role="header" data-position="fixed">
-      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">Back</a>
-      <h3>Host <?php print $hostname; ?></h3>
-      <a href="#mobile-home">Home</a>
+      <a href="#" class="ui-btn-left" data-icon="arrow-l" onclick="history.back(); return false">返回</a>
+      <h3>主机 <?php print $hostname; ?></h3>
+      <a href="#mobile-home">主页</a>
         <div data-role="navbar">
 	<ul>
   <?php

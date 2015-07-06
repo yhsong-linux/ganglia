@@ -21,12 +21,12 @@
 
   function createAggregateGraph() {
     if ($('#hreg').val() == "" || $('#metric_chooser').val() == "") {
-      alert("Host regular expression and metric name can't be blank");
+      alert("主机正则表达式和指标名称不能为空");
       return false;
     }
 
     var params = $("#aggregate_graph_form").serialize() + "&aggregate=1";
-    $("#show_direct_link").html("<a href='graph_all_periods.php?" + params + "'>Direct Link to this aggregate graph</a>");
+    $("#show_direct_link").html("<a href='graph_all_periods.php?" + params + "'>直接链接到本汇总图表</a>");
     $("#aggregate_graph_display").html('<img src="img/spinner.gif">');
     $.ajax({url: 'graph_all_periods.php', 
 	    cache: false,
@@ -120,44 +120,44 @@ $(function() {
 });
 </script>
 <div id="aggregate_graph_header">
-<h2>Create aggregate graphs</h2>
+<h2>创建汇总图表</h2>
 <form id="aggregate_graph_form">
 <table id="aggregate_graph_table_form">
 <tr>
-<td>Title:</td>
+<td>标题:</td>
 <td colspan=2><input name="title" id="title" value="" size=60></td>
 </tr>
 <tr>
-<td>Vertical (Y-Axis) label:</td>
+<td>纵坐标(Y轴)标签:</td>
 <td colspan=2><input name="vl" id="vl" value="" size=60></td>
 </tr>
 <tr>
-<td>Limits</td><td>Upper:<input name="x" id="x" value="" size=10></td><td>Lower:<input name="n" id="n" value="" size=10></td>
+<td>范围设定</td><td>最大:<input name="x" id="x" value="" size=10></td><td>最小:<input name="n" id="n" value="" size=10></td>
 </tr>
 <tr>
-<td>Host Regular expression e.g. web-[0,4], web or (web|db):</td>
+<td>主机正则表达式 比如web-[0,4], web 或 (web|db):</td>
 <td colspan=2><input name="hreg[]" id="hreg" size=60></td>
 </tr>
-<tr><td>Metric Regular expression (not a report e.g. load_one, bytes_(in|out)):</td>
+<tr><td>指标正则表达式(比如load_one, bytes_(in|out)):</td>
 <td colspan=2><input name="mreg[]" id="metric_chooser" size=60></td>
 </tr>
 <tr>
-<td>Graph Type:</td><td>
-<div id="graph_type_menu"><input type="radio" name="gtype" id="gtline" value="line" checked /><label for="gtline">Line</label>
-<input type="radio" name="gtype" id="gtstack" value="stack" /><label for="gtstack">Stacked</label></div>
+<td>图表类型:</td><td>
+<div id="graph_type_menu"><input type="radio" name="gtype" id="gtline" value="line" checked /><label for="gtline">曲线图</label>
+<input type="radio" name="gtype" id="gtstack" value="stack" /><label for="gtstack">堆积图</label></div>
 </td>
 </tr>
 <tr>
-<td>Legend options:</td><td>
-<div id="graph_legend_menu"><input type="radio" name="glegend" id="glshow" value="show" checked /><label for="glshow">Show legend</label>
-<input type="radio" name="glegend" id="glhide" value="hide" /><label for="glhide">Hide legend</label></div>
+<td>指标选择项:</td><td>
+<div id="graph_legend_menu"><input type="radio" name="glegend" id="glshow" value="show" checked /><label for="glshow">显示指标值</label>
+<input type="radio" name="glegend" id="glhide" value="hide" /><label for="glhide">隐藏指标值</label></div>
 </td>
 </tr>
 <tr>
 <td>
 </td>
 <td>
-<button class="ag_buttons" onclick="createAggregateGraph(); return false">Create Graph</button></td>
+<button class="ag_buttons" onclick="createAggregateGraph(); return false">点击创建图表</button></td>
 </tr>
 </table>
 </form>

@@ -2,8 +2,8 @@
 
 include_once "./functions.php";
 
-$meta_designator = "Grid";
-$cluster_designator = "Cluster Overview";
+$meta_designator = "网格";
+$cluster_designator = "集群概述";
 
 ///////////////////////////////////////////////////////////////////////////////
 // Determine which context we are in. Context is not specifically specified

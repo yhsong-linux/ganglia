@@ -30,20 +30,20 @@ $.extend($.ui, { timepicker: { version: "0.9.7" } });
 function Timepicker() {
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[''] = { // Default regional settings
-		currentText: 'Now',
-		closeText: 'Done',
+		currentText: '此刻',
+		closeText: '完成',
 		ampm: false,
 		amNames: ['AM', 'A'],
 		pmNames: ['PM', 'P'],
 		timeFormat: 'hh:mm tt',
 		timeSuffix: '',
-		timeOnlyTitle: 'Choose Time',
-		timeText: 'Time',
-		hourText: 'Hour',
-		minuteText: 'Minute',
-		secondText: 'Second',
-		millisecText: 'Millisecond',
-		timezoneText: 'Time Zone'
+		timeOnlyTitle: '选择时间',
+		timeText: '时间',
+		hourText: '小时',
+		minuteText: '分钟',
+		secondText: '秒',
+		millisecText: '毫秒',
+		timezoneText: '时间区域'
 	};
 	this._defaults = { // Global defaults for all the datetime picker instances
 		showButtonPanel: true,

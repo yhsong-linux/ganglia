@@ -32,7 +32,7 @@ $data->assign("name", $hostname);
 # Find the host's physical location in the cluster.
 $hostattrs = ($up) ? $hosts_up : $hosts_down;
 list($rack,$rank,$plane) = findlocation($hostattrs);
-$location = ($rack<0) ? "Unknown" : "Rack $rack, Rank $rank, Plane $plane.";
+$location = ($rack<0) ? "未知" : "经度 $rack, 纬度 $rank, 平面 $plane.";
 $data->assign("location",$location);
 
 if(isset($hostattrs['ip'])) {
@@ -59,8 +59,8 @@ $disk_use = $disk_total - $disk_free;
 $disk_units=$metrics['disk_total']['UNITS'];
 $part_max_used=$metrics['part_max_used']['VAL'];
 # Disk metrics are newer (as of 2.5.0), so we check more carefully.
-$disk = ($disk_total) ? "Using $disk_use of $disk_total $disk_units" : "Unknown";
-$part_max = ($part_max_used) ? "$part_max_used% used." : "Unknown";
+$disk = ($disk_total) ? "Using $disk_use of $disk_total $disk_units" : "未知";
+$part_max = ($part_max_used) ? "$part_max_used% used." : "未知";
 
 # Compute time of last heartbeat from node's dendrite.
 $clustertime=$cluster['LOCALTIME'];

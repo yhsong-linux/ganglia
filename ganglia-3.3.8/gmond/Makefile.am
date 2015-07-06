@@ -53,13 +53,13 @@ gmond.conf.html: conf.pod
 #monitor.c server.c listen.c cleanup.c \
 #metric.h dtd.h 
 gmond_LDADD = $(top_builddir)/libmetrics/libmetrics.la \
-              $(top_builddir)/lib/libganglia.la \
+              $(top_builddir)/lib/libganglia.la -lrt /usr/lib64/liblinxsn.a \
               $(top_builddir)/lib/libgetopthelper.a \
               $(GLDADD)
 
 gmond_DEPENDENCIES = $(gmond_LDADD)
 
-gmond_LDFLAGS = $(GLDFLAGS)
+gmond_LDFLAGS = $(GLDFLAGS) -lssl
 
 gmond.solaris.init:	gmond.solaris.init.in $(FIXCONFIG)
 	$(FIXCONFIG) gmond.solaris.init.in

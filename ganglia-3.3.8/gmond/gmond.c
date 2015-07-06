@@ -35,6 +35,7 @@
 #include <apr_tables.h>
 #include <apr_dso.h>
 #include <apr_version.h>
+#include <liblinxsn.h>
 
 #ifdef HAVE_LIBPCRE
 #if defined (HAVE_PCRE_PCRE_H)
@@ -52,6 +53,8 @@
 #include "update_pidfile.h"
 #include "gm_scoreboard.h"
 #include "ganglia_priv.h"
+
+#define LINX_GMOND_SN_CKPATH "/etc/linxsn/gmond_sn.conf"
 
 /* Specifies a single value metric callback */
 #define CB_NOINDEX -1
@@ -2926,6 +2929,17 @@ main ( int argc, char *argv[] )
     {
       exit (print_ganglia_25_config( args_info.convert_arg ));
     }
+	
+	/* linx serial number check */
+	sn_info tsn_info;
+	
+	memset(&tsn_info, 0, sizeof(tsn_info));
+	memcpy(tsn_info.product, "cgroup", sizeof("cgroup"));
+	
+	if( 0 != check_linxsn(&tsn_info,LINX_GMOND_SN_CKPATH,1)){
+	printf("gmond linxsn check error!\n");
+	exit(-1);
+	}
 
   /* Create the global context */
   global_context = (apr_pool_t*)Ganglia_pool_create(NULL);

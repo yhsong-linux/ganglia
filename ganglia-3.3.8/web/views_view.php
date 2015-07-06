@@ -4,14 +4,14 @@ include_once("./functions.php");
 include_once("./global.php");
 
 if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::VIEW, $conf))
-  die("You do not have access to view views.");
+  die("您没有权限查看视图.");
 
 ///////////////////////////////////////////////////////////////////////////////
 // Create new view
 ///////////////////////////////////////////////////////////////////////////////
 if (isset($_GET['create_view'])) {
   if(! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
-    $output = "You do not have access to edit views.";
+    $output = "您没有权限编辑视图.";
   } else {
     // Check whether the view name already exists
     $view_exists = 0;
@@ -27,7 +27,7 @@ if (isset($_GET['create_view'])) {
     if ($view_exists == 1) {
       $output = "<strong>Alert:</strong> View with the name " .
                 $_GET['view_name'] . 
-                " already exists.";
+                " 已存在.";
     } else {
       $empty_view = array ("view_name" => $_GET['view_name'],
                            "items" => array());
@@ -36,11 +36,11 @@ if (isset($_GET['create_view'])) {
       $json = json_encode($empty_view);
       if (file_put_contents($view_filename, 
                             json_prettyprint($json)) === FALSE) {
-        $output = "<strong>Alert:</strong>" .
-                  " Can't write to file $view_filename." .
-                  " Perhaps permissions are wrong.";
+        $output = "<strong>警报:</strong>" .
+                  " 不能写入文件 $view_filename." .
+                  " 也许权限是错误的.";
       } else {
-        $output = "View has been created successfully.";
+        $output = "视图已成功创建.";
       }
     }
   }
@@ -60,7 +60,7 @@ if (isset($_GET['create_view'])) {
 ///////////////////////////////////////////////////////////////////////////////
 if (isset($_GET['delete_view'])) {
   if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
-    $output = "You do not have access to edit views.";
+    $output = "您没有权限编辑视图.";
   } else {
     // Check whether the view name already exists
     $view_exists = 0;
@@ -76,16 +76,16 @@ if (isset($_GET['delete_view'])) {
     if ($view_exists != 1) {
       $output = "<strong>Alert:</strong> View with the name " .
       $_GET['view_name'] . 
-      " does not exist.";
+      " 不存在.";
     } else {
       $view_suffix = str_replace(" ", "_", $_GET['view_name']);
       $view_filename = $conf['views_dir'] . "/view_" . $view_suffix . ".json";
       if (unlink($view_filename) === FALSE) {
-        $output = "<strong>Alert:</strong>" .
-                  " Can't remove file $view_filename." .
-                  " Perhaps permissions are wrong.";
+        $output = "<strong>警报:</strong>" .
+                  " 无法删除文件 $view_filename." .
+                  " 也许权限是错误的.";
       } else {
-        $output = "View has been successfully removed.";
+        $output = "视图已成功删除.";
       }
     }
   }
@@ -96,7 +96,7 @@ if (isset($_GET['delete_view'])) {
 ///////////////////////////////////////////////////////////////////////////////
 if (isset($_GET['add_to_view'])) {
   if (! checkAccess(GangliaAcl::ALL_VIEWS, GangliaAcl::EDIT, $conf)) {
-    $output = "You do not have access to edit views.";
+    $output = "您没有权限编辑视图.";
   } else {
     $view_exists = 0;
     // Check whether the view name already exists
@@ -110,9 +110,9 @@ if (isset($_GET['add_to_view'])) {
     }
 
     if ($view_exists == 0) {
-      $output = "<strong>Alert:</strong> View " .
+      $output = "<strong>警报:</strong> View " .
       $_GET['view_name'] . 
-      " does not exist. This should not happen.";
+      " 不存在.这是不应该发生的.";
     } else {
       // Read in contents of an existing view
       $view_filename = $view['file_name'];
@@ -173,11 +173,11 @@ if (isset($_GET['add_to_view'])) {
 
       if (file_put_contents($view_filename, 
                             json_prettyprint($json)) === FALSE ) {
-        $output = "<strong>Alert:</strong>" .
-                  " Can't write to file $view_filename." .
-                  " Perhaps permissions are wrong.";
+        $output = "<strong>警报:</strong>" .
+                  " 不能写入文件 $view_filename." .
+                  " 也许权限是错误的.";
       } else {
-        $output = "View has been updated successfully.";
+        $output = "视图已成功更新.";
       } 
     }  
   }
@@ -227,7 +227,7 @@ if (sizeof($available_views) == -1) {
       <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;"> 
         <p><span class="ui-icon ui-icon-alert" 
                  style="float: left; margin-right: .3em;"></span> 
-	   <strong>Alert:</strong> There are no views defined.</p>
+	   <strong>警报:</strong> 没有定义的视图.</p>
       </div>
     </div>';
 }

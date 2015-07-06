@@ -27,7 +27,7 @@
   });
 </script>
 
-<div id="popup-dialog" title="Inspect Graph">
+<div id="popup-dialog" title="查看图表">
   <div id="popup-dialog-content">
   </div>
 </div>
@@ -35,7 +35,7 @@
 <table id="views_table">
 <tr><td valign="top">
 <div id="views_menu">
-  <p>Existing views:</p>
+  <p>已存在视图:</p>
   <ul id="navlist">
     {$existing_views}
   </ul>
@@ -50,7 +50,7 @@
     <div class="ui-widget">
       <div class="ui-state-default ui-corner-all" style="padding: 0 .7em;"> 
         <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-          No graphs defined for this view. Please add some
+          没有为此视图定义图表.请添加 
       </div>
     </div>
     {else}
@@ -59,13 +59,13 @@
       {$graphId = cat($GRAPH_BASE_ID "view_" $i)}
       {$showEventsId = cat($SHOW_EVENTS_BASE_ID "view_" $i)}
       <div class="img_view">
-        <button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;csv=1';return false;">CSV</button>
-        <button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;json=1';return false;">JSON</button>
+        <button title="导出CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;csv=1';return false;">CSV</button>
+        <button title="导出JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$view_item.url_args}&amp;json=1';return false;">JSON</button>
         {if $view_item.aggregate_graph == 1}
         <button title="Decompose aggregate graph" class="shiny-blue" onClick="javascript:location.href='?{$view_item.url_args}&amp;dg=1&amp;tab=v';return false;">Decompose</button>
         {/if}
-        <button title="Inspect Graph" onClick="inspectGraph('{$view_item.url_args}'); return false;" class="shiny-blue">Inspect</button>
-        <input title="Hide/Show Events" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">Hide/Show Events</label>
+        <button title="查看图表" onClick="inspectGraph('{$view_item.url_args}'); return false;" class="shiny-blue">查看</button>
+        <input title="隐藏/显示事件" type="checkbox" id="{$showEventsId}" onclick="showEvents('{$graphId}', this.checked)"/><label class="show_event_text" for="{$showEventsId}">隐藏/显示事件</label>
         <br />
 {if $graph_engine == "flot"}
 <div id="placeholder_{$view_item.url_args}" class="flotgraph2 img_view"></div>

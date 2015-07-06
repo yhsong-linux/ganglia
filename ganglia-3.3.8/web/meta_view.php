@@ -85,7 +85,7 @@ foreach ( $sorted_sources as $source => $val )
                   # Negative control room values means dont display grid summary.
                   if ($controlroom < 0) continue;
                   $num_sources = count($sorted_sources) - 1;
-                  $name = "$self $meta_designator ($num_sources sources)";
+                  $name = "$self $meta_designator ($num_sources 个源)";
                   $graph_url = "me=$sourceurl&amp;$get_metric_string";
                   $url = "./?$get_metric_string";
                }
@@ -97,7 +97,7 @@ foreach ( $sorted_sources as $source => $val )
                   $authority = $grid[$source]['AUTHORITY'];
                   $url = "$authority?gw=fwd&amp;gs=$gridstack_url&amp;$get_metric_string";
                }
-            $alt_url = "<a href=\"./?t=yes&amp;$get_metric_string\">(tree view)</a>";
+            $alt_url = "<a href=\"./?t=yes&amp;$get_metric_string\">(树视图)</a>";
             $class = "grid";
          }
       else
@@ -107,7 +107,7 @@ foreach ( $sorted_sources as $source => $val )
             $localtime = $grid[$source]['LOCALTIME'];
             $graph_url = "c=$sourceurl&amp;$get_metric_string&amp;st=$localtime";
             $url = "./?c=$sourceurl&amp;$get_metric_string";
-            $alt_url = "<a href=\"./?p=2&amp;$graph_url\">(physical view)</a>";
+            $alt_url = "<a href=\"./?p=2&amp;$graph_url\">(物理视图)</a>";
             $class = "cluster";
          }
 
@@ -138,7 +138,7 @@ foreach ( $sorted_sources as $source => $val )
       $sources[$source]["base64img"] = "";
 
       if ($localtime)
-         $sources[$source]["localtime"] = "<font size=\"-1\">Localtime:</font><br>&nbsp;&nbsp;" 
+         $sources[$source]["localtime"] = "<font size=\"-1\">本地时间:</font><br>&nbsp;&nbsp;" 
             . date("Y-m-d H:i", $localtime);
 
       # I dont like this either, but we need to have private clusters because some
@@ -148,10 +148,29 @@ foreach ( $sorted_sources as $source => $val )
             $sources[$source]["alt_view"] = "<FONT SIZE=\"-2\">$alt_url</FONT>";
             $sources[$source]["public"] = 1;
             if ($cluster_load)
-               $sources[$source]["cluster_load"] = "<font size=\"-1\">Current Load Avg (15, 5, 1m):</font>"
+               $sources[$source]["cluster_load"] = "<font size=\"-1\">当前平均负载 (15, 5, 1分钟):</font>"
                   ."<br>&nbsp;&nbsp;<b>$cluster_load</b>";
-            if (isset($cluster_util))
-               $sources[$source]["cluster_util"] = "<font size=\"-1\">Avg Utilization (last $range):</font>"
+						if (isset($cluster_util))
+							 if ($range == "hour")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1小时):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "2hr")
+	             $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 2小时):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "4hr")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 4小时):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "day")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1天):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "week")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1周):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "month")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1月):</font>"
+                  ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
+							 if ($range == "year")
+               $sources[$source]["cluster_util"] = "<font size=\"-1\">平均利用率 (最近 1年):</font>"
                   ."<br>&nbsp;&nbsp;<b>$cluster_util%</b>";
             $sources[$source]["num_nodes"] = $grid[$source]["HOSTS_UP"];
             $sources[$source]["num_dead_nodes"] = $grid[$source]["HOSTS_DOWN"];

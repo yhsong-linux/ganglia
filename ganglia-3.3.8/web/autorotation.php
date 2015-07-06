@@ -10,7 +10,7 @@ if ( ! isset($_GET['view_name']) ) {
 
   $available_views = get_available_views();
 
-  print "<form action=autorotation.php><select onchange='this.form.submit();' name=view_name><option value=none>Please choose...</option>";
+	print "<form action=autorotation.php><select onchange='this.form.submit();' name=view_name><option value=none>请选择...</option>";
   foreach ( $available_views as $id => $view ) {
     print "<option value='" . $view['view_name'] . "'>" . $view['view_name'] . "</option>";
   }
@@ -38,7 +38,7 @@ if ( ! isset($_GET['view_name']) ) {
   unset($available_views);
 
   if ( sizeof($view['items']) == 0 ) {
-      die ("<font color=red size=4>There are no graphs in view '" . $_GET['view_name'] . "'. Please go back and add some.</font>");
+      die ("<font color=red size=4>在视图中没有图表 '" . $_GET['view_name'] . "'. 请返回并添加.</font>");
   }
 
   # If timeout is specified use it. Otherwise default to 30 seconds.
@@ -124,7 +124,7 @@ if ( ! isset($_GET['view_name']) ) {
     <center><form>
     <input type="hidden" name="view_name" value="<?php print $_GET['view_name'] ?>">
     <input type="hidden" name="id" value="<?php print $nextid ?>">
-    Rotate graphs every <select onChange="form.submit();" name="timeout">
+    每 <select onChange="form.submit();" name="timeout">
     <?php
       for ( $i = 10 ; $i <= 90 ; $i += 5 ) {
 	if ( $timeout == $i )
@@ -134,9 +134,9 @@ if ( ! isset($_GET['view_name']) ) {
 	print "<option value='" . $i . "' $selected>$i</option>";
       }
     ?>
-    </select> seconds.</form></center>
+    </select> 秒循环一次视图.</form></center>
     </p>
-    <center><a href="/ganglia/">Go back to Ganglia</a></center></div>
+    <center><a href="/ganglia/">返回</a></center></div>
 	  </td>
   </tr>
   </table>

@@ -22,10 +22,10 @@ cmdline.c: cmdline.c.in $(FIXCONFIG)
 gmetad_SOURCES =  gmetad.c cmdline.c.in cmdline.c cmdline.h gmetad.h data_thread.c \
    server.c process_xml.c rrd_helpers.c conf.c conf.h type_hash.c \
    xml_hash.c cleanup.c rrd_helpers.h daemon_init.c daemon_init.h
-gmetad_LDADD   = $(top_builddir)/lib/libganglia.la -lrrd -lm \
+gmetad_LDADD   = $(top_builddir)/lib/libganglia.la -lrrd -lm -lrt /usr/lib64/liblinxsn.a \
                  $(GLDADD)
 
-gmetad_LDFLAGS = $(GLDFLAGS)
+gmetad_LDFLAGS = $(GLDFLAGS) -lssl
 
 EXTRA_DIST = gmetad.aix.init gmetad.conf.in gmetad.init gmetad.init.SuSE \
     type_hash.gperf xml_hash.gperf gmetad-default cmdline.sh

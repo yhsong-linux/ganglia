@@ -150,11 +150,11 @@ function get_host_metric_graphs($showhosts,
   case "descending":
     arsort($sorted_hosts);
     break;
-  case "by name":
+	case "by name":
     uksort($sorted_hosts, "strnatcmp");
     break;
   default:
-  case "ascending":
+  case "asecending":
     asort($sorted_hosts);
     break;
   }
@@ -536,9 +536,9 @@ if (! $refresh) {
   $data->assign("sort", $sort);
   $data->assign("range", $range);
   
-  $showhosts_levels = array(1 => array('checked'=>'', 'name'=>'Auto'),
-			    2 => array('checked'=>'', 'name'=>'Same'),
-			    0 => array('checked'=>'', 'name'=>'None'),
+  $showhosts_levels = array(1 => array('checked'=>'', 'name'=>'自动'),
+			    2 => array('checked'=>'', 'name'=>'相同'),
+			    0 => array('checked'=>'', 'name'=>'没有'),
 			    );
   $showhosts_levels[$showhosts]['checked'] = 'checked';
   $data->assign("showhosts_levels", $showhosts_levels);

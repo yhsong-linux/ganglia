@@ -27,12 +27,12 @@
     });;
   });
 </script>
-<div id="metric-actions-dialog" title="Metric Actions">
+<div id="metric-actions-dialog" title="指标操作">
 <div id="metric-actions-dialog-content">
-	Available Metric actions.
+	合适的指标操作.
 </div>
 </div>
-<div id="popup-dialog" title="Inspect Graph">
+<div id="popup-dialog" title="查看图表">
   <div id="popup-dialog-content">
   </div>
 </div>
@@ -48,9 +48,9 @@
     {else}
       {foreach $items item}
       <div class="img_view">
-        <button title="Export to CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;csv=1';return false;">CSV</button>
-        <button title="Export to JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;json=1';return false;">JSON</button>
-        <button title="Inspect Graph" onClick="inspectGraph('{$item.url_args}'); return false;" class="shiny-blue">Inspect</button>
+        <button title="导出CSV" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;csv=1';return false;">CSV</button>
+        <button title="导出JSON" class="cupid-green" onClick="javascript:location.href='graph.php?{$item.url_args}&amp;json=1';return false;">JSON</button>
+        <button title="查看图表" onClick="inspectGraph('{$item.url_args}'); return false;" class="shiny-blue">查看</button>
         <br /><a href="graph_all_periods.php?{$item.url_args}"><img class="noborder {$additional_host_img_css_classes}" style="margin-top:5px;" src="graph.php?{$item.url_args}" /></a>
       </div>
       {/foreach}

@@ -44,7 +44,7 @@ $base = isset($_GET['base']) ? $_GET['base'] . "/" : "";
 	  print "<a href=\"" . $base . "/graph_all_periods.php?" . htmlentities($element['graph_args']) ."&amp;z=large\"><img title=\"" . $legend . " - " . $element['name'] . "\" border=0 src=\"" . $base . "/graph.php?" . htmlentities($element['graph_args']) . "&amp;z=small" . $range_args .  "\" style=\"padding:2px;\"></a>";
 	}
       } else {
-	print "No graphs defined for this view. Please add some";
+	print " 没有为此视图定义图表.请添加";
       }
     }
   } 

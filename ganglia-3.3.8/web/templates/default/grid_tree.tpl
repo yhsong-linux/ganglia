@@ -1,6 +1,6 @@
 <table border="0" width="100%">
 <tr>
-  <td class="title"><B>{$self} Grid Tree</b></td>
+  <td class="title"><B>{$self} Grid 树结构</b></td>
 </tr>
 </table>
 
@@ -40,13 +40,13 @@
 
 <p>
 <hr />
-<b>Legend:</b>
+<b>说明:</b>
 <table cellspacing="5" border="0">
 <tr>
-<td class="self" width="20">&nbsp;</td><td>This Grid.</td>
+<td class="self" width="20">&nbsp;</td><td>表示当前网格.</td>
 </tr>
 <tr>
-<td class="grid">&nbsp;</td><td>A Remote Grid.</td>
+<td class="grid">&nbsp;</td><td>表示远程网格.</td>
 </tr>
 </table>
 

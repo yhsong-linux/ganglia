@@ -34,48 +34,48 @@ catch (Exception $e)
 $GHOME = ".";
 
 if ($context == "meta" or $context == "control") {
-      $title = "$self $meta_designator Report";
+      $title = "$self $meta_designator 报告";
       include_once "./header.php";
       include_once "./meta_view.php";
 } else if ($context == "tree") {
-      $title = "$self $meta_designator Tree";
+      $title = "$self $meta_designator 树";
       include_once "./header.php";
       include_once "./grid_tree.php";
 } else if ($context == "cluster" or $context == "cluster-summary") {
       if (preg_match('/cluster/i', $clustername))
-         $title = "$clustername Report";
+         $title = "$clustername 报告";
       else
-         $title = "$clustername Cluster Report";
+         $title = "$clustername 集群报告";
 
       include_once "./header.php";
       include_once "./cluster_view.php";
 } else if ($context == "physical") {
-      $title = "$clustername Physical View";
+      $title = "$clustername 物理视图";
       include_once "./header.php";
       include_once "./physical_view.php";
 } else if ($context == "node") {
-      $title = "$hostname Node View";
+      $title = "$hostname 节点视图";
       include_once "./header.php";
       include_once "./show_node.php";
 } else if ($context == "host") {
-      $title = "$hostname Host Report";
+      $title = "$hostname 主机报告";
       include_once "./header.php";
       include_once "./host_view.php";
 } else if ($context == "views") {
-      $title = "$viewname view";
+      $title = "$viewname 视图";
       include_once "./header.php";
       include_once "./views_view.php";
 } else if ($context == "compare_hosts") {
-      $title = "Compare Hosts";
+      $title = "主机比较";
       include_once "./header.php";
       include_once "./compare_hosts.php";
 } else if ($context == "decompose_graph") {
-      $title = "Decompose graph";
+      $title = "分解图";
       include_once "./header.php";
       include_once "./decompose_graph.php";
 } else {
-      $title = "Unknown Context";
-      print "Unknown Context Error: Have you specified a host but not a cluster?.";
+      $title = "未知上下文";
+      print "未知上下文错误: 你指定的是主机而不是集群?.";
 }
 include_once "./footer.php";
 
