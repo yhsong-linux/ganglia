@@ -29,8 +29,12 @@
       </header>
       <section>
         <p>index.php包含eval_conf.php，其中eval_conf.php的阅读笔记如下：
-dirname(<strong>FILE</strong>)用于获取包含当前文件的路径的目录部分，具体说明见下面的链接：
-<a href="http://php.net/manual/zh/function.dirname.php">PHP手册-dirname</a></p>
+dirname(<strong>FILE</strong>)用于获取包含当前文件的路径的目录部分；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.dirname.php">PHP手册－dirname</a>
+ini_get('include_path')用于获取配置项include_path的值；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.ini-get.php">PHP手册－ini_get</a>
+set_include_path( "$base_dir/lib:" . ini_get( 'include_path' ) )将当前包含该文件的路径扩展到include_path中；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.set-include-path.php">PHP手册－set_include_path</a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/yhsong-linux">yhsong-linux</a></p>
