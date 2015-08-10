@@ -34,7 +34,19 @@ dirname(<strong>FILE</strong>)用于获取包含当前文件的路径的目录�
 ini_get('include_path')用于获取配置项include_path的值；该函数的具体说明见下面的链接：
 <a href="http://php.net/manual/zh/function.ini-get.php">PHP手册－ini_get</a>
 set_include_path( "$base_dir/lib:" . ini_get( 'include_path' ) )将当前包含该文件的路径扩展到include_path中；该函数的具体说明见下面的链接：
-<a href="http://php.net/manual/zh/function.set-include-path.php">PHP手册－set_include_path</a></p>
+<a href="http://php.net/manual/zh/function.set-include-path.php">PHP手册－set_include_path</a>
+file_exists( $base_dir . "/conf.php" )用于判断conf.php文件是否存在；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.file-exists.php">PHP手册－file_exists</a>
+isset($conf['rrds'])用于判断$conf['rrds']变量是否设置；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.isset.php">PHP手册－isset</a>
+is_readable($conf['rrds'])用于判断$conf['rrds']变量的值（文件名）是否可读；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.is-readable.php">PHP手册－is_readable</a>
+is_writeable($conf['dwoo_compiled_dir'])用于判断conf['dwoo_compiled_dir']变量的值（文件名）是否可写；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.is-writable.php">PHP手册－is_writeable</a>
+in_array( $conf['auth_system'], $valid_auth_options )判断$valid_auth_options中是否存在$conf['auth_system']变量的值；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.in-array.php">PHP手册－in_array</a>
+count($errors)计算$errors数组元素的个数；该函数的具体说明见下面的链接：
+<a href="http://php.net/manual/zh/function.count.php">PHP手册－count</a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/yhsong-linux">yhsong-linux</a></p>
